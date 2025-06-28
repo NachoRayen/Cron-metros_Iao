@@ -542,195 +542,113 @@
       { name: "Rey Dragón", min: 1320, max: 1800 },
       { name: "Dragón Legendario", min: 960, max: 1440 },
       { name: "Gran Dragón Negro", min: 720, max: 1200 },
-      { name: "Gorgona", min: 30, max: 45 },
-      { name: "Vampiro Transformado", min: 0, max: 45 },
-      { name: "Garveloth", min: 60, max: 120 }
-      // Agregá más bosses según necesidad
+      { name: "Gran Dragón Rojo", min: 720, max: 1200 },
+      { name: "Archimago Abisal", min: 540, max: 1080 },
+      { name: "Gran Dragón Azul", min: 480, max: 900 },
+      { name: "Titan el Colosal", min: 360, max: 660 },
+      { name: "Lord Garveloth", min: 300, max: 600 },
+      { name: "Vampiro Transformado", min: 270, max: 540 },
+      { name: "Gorgona", min: 210, max: 420 },
     ];
 
-    let currentUser = null;
     let timersData = {};
-
-    // Guarda la preferencia del tema
-    function saveThemePreference(theme) {
-      localStorage.setItem("theme", theme);
-    }
-
-    // Carga el tema de localStorage o por defecto dark
-    function loadTheme() {
-      const saved = localStorage.getItem("theme");
-      if (saved === "light") {
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
-        themeToggleBtn.textContent = "Cambiar a tema oscuro";
-      } else {
-        document.body.classList.remove("light");
-        document.body.classList.add("dark");
-        themeToggleBtn.textContent = "Cambiar a tema claro";
-      }
-    }
-
-    function toggleTheme() {
-      if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
-        themeToggleBtn.textContent = "Cambiar a tema oscuro";
-        saveThemePreference("light");
-      } else {
-        document.body.classList.remove("light");
-        document.body.classList.add("dark");
-        themeToggleBtn.textContent = "Cambiar a tema claro";
-        saveThemePreference("dark");
-      }
-    }
-
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      if (!email || !password) {
-        messageDiv.textContent = "Email y contraseña son obligatorios.";
-        return;
-      }
-      messageDiv.textContent = "";
-      loadingScreen.style.display = "flex";
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          messageDiv.textContent = "";
-          loadingScreen.style.display = "none";
-        })
-        .catch(error => {
-          messageDiv.textContent = "Error de login: " + error.message;
-          loadingScreen.style.display = "none";
-        });
-    }
-
-    function register() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      if (!email || !password) {
-        messageDiv.textContent = "Email y contraseña son obligatorios.";
-        return;
-      }
-      messageDiv.textContent = "";
-      loadingScreen.style.display = "flex";
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          messageDiv.textContent = "Registrado. Esperá aprobación.";
-          loadingScreen.style.display = "none";
-          // Opcional: poner al usuario en allowedUsers=false para esperar aprobación
-          // database.ref(`allowedUsers/${userCredential.user.uid}`).set(false);
-        })
-        .catch(error => {
-          messageDiv.textContent = "Error de registro: " + error.message;
-          loadingScreen.style.display = "none";
-        });
-    }
-
-    function logout() {
-      auth.signOut();
-    }
-
-    // Función que chequea si el usuario está en allowedUsers (true)
-    function checkAuthorization(user) {
-      if (!user) return Promise.resolve(false);
-      console.log("Chequeando autorización para UID:", user.uid);
-      return database.ref(`allowedUsers/${user.uid}`).once("value")
-        .then(snapshot => {
-          console.log("Valor de autorización:", snapshot.val());
-          return !!snapshot.val();
-        })
-        .catch(err => {
-          console.error("Error en autorización:", err);
-          return false;
-        });
-    }
-
-    auth.onAuthStateChanged(async (user) => {
-      currentUser = user;
-      if (user) {
-        loadingScreen.style.display = "flex";
-        const authorized = await checkAuthorization(user);
-        if (authorized) {
-          loginForm.style.display = "none";
-          notAuthorizedDiv.style.display = "none";
-          logoutButton.style.display = "inline-block";
-          toolsDiv.style.display = "flex";
-          themeToggleBtn.style.display = "inline-block";
-          loadingScreen.style.display = "none";
-          loadTheme();
-          startTimers();
-        } else {
-          logoutButton.style.display = "none";
-          toolsDiv.style.display = "none";
-          themeToggleBtn.style.display = "none";
-          timersContainer.style.display = "none";
-          loginForm.style.display = "none";
-          notAuthorizedDiv.style.display = "block";
-          loadingScreen.style.display = "none";
-        }
-      } else {
-        currentUser = null;
-        logoutButton.style.display = "none";
-        toolsDiv.style.display = "none";
-        themeToggleBtn.style.display = "none";
-        timersContainer.style.display = "none";
-        loginForm.style.display = "flex";
-        notAuthorizedDiv.style.display = "none";
-        clearTimers();
-      }
-    });
-
-    // Mostrar y actualizar timers
+    let userUid = null;
     let intervalId = null;
 
-    function startTimers() {
-      timersContainer.innerHTML = "";
-      timersContainer.style.display = "flex";
+    function createBossElement(boss) {
+      const safeId = boss.name.replace(/\s+/g, "");
+      const div = document.createElement("div");
+      div.className = "timer";
+      div.id = `timer-${safeId}`;
 
+      div.innerHTML = `
+        <h2>${boss.name}</h2>
+        <div class="respawn-time">${formatTimeRange(boss.min, boss.max)}</div>
+        <div class="timer-time" id="time-${safeId}">--:--</div>
+        <div class="warning" id="warn-${safeId}"></div>
+
+        <div class="input-group">
+          <input
+            type="text"
+            class="death-time-input"
+            id="death-${safeId}"
+            placeholder="Hora muerte (HH:MM)"
+            maxlength="5"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="btn-murio" onclick="markNow('${boss.name}')">Murió recién</button>
+        </div>
+      `;
+
+      // Evento para input que permita guardar cambios al editar hora manualmente
+      const input = div.querySelector(`#death-${safeId}`);
+      input.addEventListener("change", () => {
+        const val = input.value.trim();
+        if (/^\d{2}:\d{2}$/.test(val)) {
+          // Guardar la nueva hora como fecha hoy con esa hora
+          const now = new Date();
+          const [hh, mm] = val.split(":").map(Number);
+          const newDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+
+          if (newDate > now) {
+            // Si la hora ingresada es mayor a la actual, asumimos que es de ayer para evitar confusión
+            newDate.setDate(newDate.getDate() - 1);
+          }
+
+          saveKillTime(boss.name, newDate.toISOString());
+        } else {
+          alert("Formato inválido, use HH:MM (ejemplo: 14:30)");
+          // Restaurar valor previo para evitar confusión
+          if (timersData[boss.name]) {
+            const prevDate = new Date(timersData[boss.name]);
+            input.value = prevDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          } else {
+            input.value = "";
+          }
+        }
+      });
+
+      return div;
+    }
+
+    function formatTimeRange(min, max) {
+      // Mostrar en formato minutos u horas
+      const formatMinutes = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${m % 60 ? m % 60 + 'm' : ''}`);
+      return `${formatMinutes(min)} a ${formatMinutes(max)}`;
+    }
+
+    function formatCountdown(seconds) {
+      if (seconds <= 0) return "00:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function renderTimers() {
+      timersContainer.innerHTML = "";
       bosses.forEach(boss => {
-        const div = document.createElement("div");
-        div.className = "timer";
-        div.id = `timer-${boss.name.replace(/\s+/g, "")}`;
-
-        div.innerHTML = `
-          <h2>${boss.name}</h2>
-          <div class="respawn-time">Respawn: ${formatMinutes(boss.min)} a ${formatMinutes(boss.max)}</div>
-          <div class="timer-time" id="time-${boss.name.replace(/\s+/g, "")}">--:--</div>
-          <div class="input-group">
-            <input class="death-time-input" type="text" id="death-${boss.name.replace(/\s+/g, "")}" placeholder="HH:MM" />
-            <button class="btn-murio" onclick="markDead('${boss.name}')">Murió</button>
-          </div>
-          <div class="warning" id="warn-${boss.name.replace(/\s+/g, "")}"></div>
-        `;
-        timersContainer.appendChild(div);
+        const el = createBossElement(boss);
+        timersContainer.appendChild(el);
       });
-
-      // Cargar datos guardados en Firebase por usuario
-      database.ref(`userBossTimers/${currentUser.uid}`).once("value").then(snapshot => {
-        timersData = snapshot.val() || {};
-        updateTimers();
-      });
-
-      if (intervalId) clearInterval(intervalId);
-      intervalId = setInterval(updateTimers, 1000);
     }
 
-    function clearTimers() {
-      if (intervalId) clearInterval(intervalId);
-      timersContainer.innerHTML = "";
+    function saveKillTime(bossName, isoString) {
+      if (!userUid) return;
+      const updates = {};
+      updates[`timers/${userUid}/${bossName}`] = isoString;
+      database.ref().update(updates).catch(console.error);
     }
 
-    function formatMinutes(mins) {
-      if (mins < 60) return `${mins} min`;
-      const h = Math.floor(mins / 60);
-      const m = mins % 60;
-      if (m === 0) return `${h} h`;
-      return `${h} h ${m} min`;
+    function markNow(bossName) {
+      const nowIso = new Date().toISOString();
+      saveKillTime(bossName, nowIso);
+      // Actualizar input inmediatamente
+      const safeId = bossName.replace(/\s+/g, "");
+      const input = document.getElementById(`death-${safeId}`);
+      input.value = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Actualiza los timers y el color según estado
     function updateTimers() {
       const now = new Date();
 
@@ -758,28 +676,26 @@
           deathInput.value = hhmm;
         }
 
-        // Tiempo transcurrido en segundos
         const diffSeconds = (now - lastKillTime) / 1000;
-        // Tiempo mínimo y máximo en segundos
         const minSec = boss.min * 60;
         const maxSec = boss.max * 60;
 
         if (diffSeconds < minSec) {
-          // Boss no puede spawnear todavía
+          // No puede spawnear aún
           const timeLeft = minSec - diffSeconds;
           timeDiv.textContent = formatCountdown(timeLeft);
           timerDiv.classList.remove("spawned");
           timerDiv.classList.add("spawning");
           warnDiv.textContent = "No puede spawnear aún";
         } else if (diffSeconds >= minSec && diffSeconds <= maxSec) {
-          // Boss puede spawnear (ventana)
+          // Puede spawnear (ventana)
           const timeLeft = maxSec - diffSeconds;
           timeDiv.textContent = formatCountdown(timeLeft);
           timerDiv.classList.remove("spawned");
           timerDiv.classList.add("spawning");
           warnDiv.textContent = "Puede spawnear";
         } else {
-          // Boss ya pasó el máximo tiempo, se considera spawneado
+          // Ya pasó el máximo, se considera spawneado
           timeDiv.textContent = "¡Spawned!";
           timerDiv.classList.remove("spawning");
           timerDiv.classList.add("spawned");
@@ -788,61 +704,154 @@
       });
     }
 
-    function formatCountdown(seconds) {
-      if (seconds <= 0) return "00:00";
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60);
-      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-
-    // Marca que el boss murió ahora o con hora indicada
-    function markDead(bossName) {
-      const deathInput = document.getElementById(`death-${bossName.replace(/\s+/g, "")}`);
-      let inputVal = deathInput.value.trim();
-      let now = new Date();
-
-      if (inputVal) {
-        // Parsear HH:MM en la hora local hoy
-        const parts = inputVal.split(":");
-        if (parts.length === 2) {
-          const h = parseInt(parts[0], 10);
-          const m = parseInt(parts[1], 10);
-          if (!isNaN(h) && !isNaN(m) && h >= 0 && h < 24 && m >= 0 && m < 60) {
-            const parsedDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-            // Si la hora parseada es mayor a ahora, asumimos que fue del día anterior (por ejemplo 23:30 pasado la medianoche)
-            if (parsedDate > now) parsedDate.setDate(parsedDate.getDate() - 1);
-            now = parsedDate;
-          } else {
-            alert("Hora inválida. Formato HH:MM (24h).");
-            return;
-          }
-        } else {
-          alert("Hora inválida. Formato HH:MM.");
-          return;
-        }
-      }
-
-      timersData[bossName] = now.toISOString();
-      database.ref(`userBossTimers/${currentUser.uid}/${bossName}`).set(timersData[bossName]);
-      updateTimers();
-    }
-
-    // Filtrar bosses por texto
     function filterBosses() {
-      const filter = searchInput.value.toLowerCase();
+      const search = searchInput.value.toLowerCase();
       bosses.forEach(boss => {
-        const div = document.getElementById(`timer-${boss.name.replace(/\s+/g, "")}`);
-        if (boss.name.toLowerCase().includes(filter)) {
-          div.style.display = "flex";
-        } else {
-          div.style.display = "none";
-        }
+        const el = document.getElementById(`timer-${boss.name.replace(/\s+/g, "")}`);
+        if (!el) return;
+        const visible = boss.name.toLowerCase().includes(search);
+        el.style.display = visible ? "flex" : "none";
       });
     }
 
-    // Cargar tema guardado al iniciar
-    loadTheme();
+    function toggleTheme() {
+      if (document.body.classList.contains("dark")) {
+        document.body.classList.remove("dark");
+        document.body.classList.add("light");
+        themeToggleBtn.textContent = "Cambiar a tema oscuro";
+        localStorage.setItem("theme", "light");
+      } else {
+        document.body.classList.remove("light");
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "Cambiar a tema claro";
+        localStorage.setItem("theme", "dark");
+      }
+    }
 
+    function applySavedTheme() {
+      const saved = localStorage.getItem("theme");
+      if (saved === "light") {
+        document.body.classList.remove("dark");
+        document.body.classList.add("light");
+        themeToggleBtn.textContent = "Cambiar a tema oscuro";
+      } else {
+        document.body.classList.remove("light");
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "Cambiar a tema claro";
+      }
+    }
+
+    // Autorización: Verificar si usuario está en allowedUsers
+    async function checkAuthorization(uid) {
+      const allowedRef = database.ref(`allowedUsers/${uid}`);
+      const snapshot = await allowedRef.get();
+      return snapshot.exists() && snapshot.val() === true;
+    }
+
+    // Escuchar auth state
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        userUid = user.uid;
+        loadingScreen.style.display = "flex";
+        const authorized = await checkAuthorization(userUid);
+
+        if (!authorized) {
+          loginForm.style.display = "none";
+          notAuthorizedDiv.style.display = "block";
+          logoutButton.style.display = "inline-block";
+          toolsDiv.style.display = "none";
+          timersContainer.style.display = "none";
+          themeToggleBtn.style.display = "none";
+          loadingScreen.style.display = "none";
+          return;
+        }
+
+        // Usuario autorizado, mostrar timers y cargar datos
+        loginForm.style.display = "none";
+        notAuthorizedDiv.style.display = "none";
+        logoutButton.style.display = "inline-block";
+        toolsDiv.style.display = "flex";
+        timersContainer.style.display = "flex";
+        themeToggleBtn.style.display = "inline-block";
+
+        renderTimers();
+
+        // Escuchar cambios en timers para este usuario
+        database.ref(`timers/${userUid}`).on("value", snapshot => {
+          timersData = snapshot.val() || {};
+          updateTimers();
+        });
+
+        // Actualizar cada 10 segundos
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(updateTimers, 10000);
+
+        applySavedTheme();
+        loadingScreen.style.display = "none";
+        messageDiv.textContent = "";
+      } else {
+        userUid = null;
+        loginForm.style.display = "flex";
+        notAuthorizedDiv.style.display = "none";
+        logoutButton.style.display = "none";
+        toolsDiv.style.display = "none";
+        timersContainer.style.display = "none";
+        themeToggleBtn.style.display = "none";
+        if (intervalId) clearInterval(intervalId);
+        messageDiv.textContent = "";
+      }
+    });
+
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        messageDiv.textContent = "Completa email y contraseña";
+        return;
+      }
+
+      loadingScreen.style.display = "flex";
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          messageDiv.textContent = "";
+          loadingScreen.style.display = "none";
+        })
+        .catch(error => {
+          loadingScreen.style.display = "none";
+          messageDiv.textContent = `Error: ${error.message}`;
+        });
+    }
+
+    function register() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        messageDiv.textContent = "Completa email y contraseña";
+        return;
+      }
+
+      loadingScreen.style.display = "flex";
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          messageDiv.textContent = "Usuario creado. Espera autorización.";
+          loadingScreen.style.display = "none";
+          // Por seguridad, no logueamos directamente sino que esperan autorización
+          auth.signOut();
+        })
+        .catch(error => {
+          loadingScreen.style.display = "none";
+          messageDiv.textContent = `Error: ${error.message}`;
+        });
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    // Al iniciar, aplicar tema guardado
+    applySavedTheme();
   </script>
 </body>
 </html>
