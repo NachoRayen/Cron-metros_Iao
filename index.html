@@ -4,67 +4,54 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cronómetro de Bosses - Imperium AO</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 2rem;
       font-family: 'MedievalSharp', cursive;
-      background: #0a0f1a;
+      background: #000;
       color: #d0e7ff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      transition: background-color 0.5s ease;
     }
+
     h1 {
       font-size: 2.5rem;
       color: gold;
       text-shadow: 0 0 10px #000;
-      margin-bottom: 1rem;
     }
+
     .timer-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
       margin-top: 2rem;
-      animation: fadeIn 0.7s ease forwards;
-      max-width: 1000px;
-      width: 100%;
     }
+
     .timer {
       background: rgba(10, 20, 40, 0.85);
       border: 2px solid gold;
       border-radius: 12px;
       padding: 1rem;
-      width: 260px;
+      width: 250px;
       text-align: center;
       box-shadow: 0 0 15px #000;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.5s forwards;
-      animation-delay: 0.2s;
-      transition: box-shadow 0.3s ease;
-      user-select: none;
     }
-    .timer:hover {
-      box-shadow: 0 0 25px gold;
-    }
+
     .timer h2 {
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.5rem;
       color: #87cefa;
-      font-size: 1.4rem;
-      letter-spacing: 0.03em;
     }
+
     .respawn-time {
-      font-size: 0.9rem;
-      color: #cce6ff;
-      margin-bottom: 0.8rem;
-      font-style: italic;
-      user-select: text;
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #ffd;
     }
+
     .controls button {
       margin: 0.25rem;
       padding: 0.5rem 1rem;
@@ -76,204 +63,33 @@
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
       transition: background 0.3s, transform 0.1s;
-      user-select: none;
     }
-    .controls button:hover:enabled {
+
+    .controls button:hover {
       background: #0055aa;
       transform: scale(1.05);
     }
-    .controls button:disabled {
-      background: #1a2a4a;
-      cursor: not-allowed;
-      border-color: #555;
-      transform: none;
-    }
+
     .warning {
       margin-top: 0.5rem;
       color: #ffae00;
       font-weight: bold;
       min-height: 1.2em;
-      user-select: none;
     }
+
     .icon {
       margin-left: 5px;
       font-size: 1.1rem;
-      user-select: none;
-    }
-    #login-form, #logout-button, #not-authorized {
-      margin-top: 1.5rem;
-      background: rgba(10, 20, 40, 0.85);
-      border: 2px solid gold;
-      border-radius: 12px;
-      padding: 1rem;
-      width: 320px;
-      box-shadow: 0 0 15px #000;
-      text-align: center;
-      animation: fadeIn 0.5s ease forwards;
-      user-select: none;
-    }
-    #login-form input {
-      display: block;
-      width: 90%;
-      margin: 0.5rem auto;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #87cefa;
-      font-family: 'MedievalSharp', cursive;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-    #login-form input:focus {
-      border-color: #d0e7ff;
-      outline: none;
-      background-color: #132d5a;
-      color: #d0e7ff;
-    }
-    #login-form button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      width: 95%;
-      background: #003366;
-      color: #d0e7ff;
-      border: 2px solid #87cefa;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      font-family: 'MedievalSharp', cursive;
-      transition: background 0.3s, transform 0.1s;
-      user-select: none;
-    }
-    #login-form button:hover:enabled {
-      background: #0055aa;
-      transform: scale(1.05);
-    }
-    #login-form button:disabled {
-      background: #1a2a4a;
-      cursor: not-allowed;
-      border-color: #555;
-      transform: none;
-    }
-    #logout-button {
-      cursor: pointer;
-      font-weight: bold;
-      font-family: 'MedievalSharp', cursive;
-      background: #800000;
-      color: #ffd0d0;
-      border: 2px solid #ff8080;
-      padding: 0.6rem 1.2rem;
-      border-radius: 12px;
-      margin-top: 1rem;
-      width: 320px;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-    #logout-button:hover {
-      background: #aa0000;
-    }
-    #not-authorized {
-      color: #ff4c4c;
-      font-weight: bold;
-      font-size: 1.1rem;
-      user-select: none;
-    }
-    #message {
-      margin-top: 0.8rem;
-      min-height: 1.4em;
-      font-weight: bold;
-      font-family: 'MedievalSharp', cursive;
-      user-select: none;
-    }
-    #message.success {
-      color: #6ce06c;
-    }
-    #message.error {
-      color: #ff4c4c;
-    }
-    #loading-spinner {
-      margin: 1rem auto;
-      border: 4px solid #87cefa;
-      border-top: 4px solid transparent;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      animation: spin 1s linear infinite;
-      display: none;
-      user-select: none;
-    }
-    .password-wrapper {
-      position: relative;
-      width: 90%;
-      margin: 0.5rem auto;
-    }
-    .password-wrapper input {
-      width: 100%;
-      padding-right: 40px;
-      box-sizing: border-box;
-    }
-    .toggle-password {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: #87cefa;
-      user-select: none;
-    }
-
-    /* Animations */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-    @keyframes fadeInUp {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    /* Responsive */
-    @media (max-width: 400px) {
-      #login-form, #logout-button, #not-authorized {
-        width: 90%;
-      }
-      .timer {
-        width: 90%;
-      }
     }
   </style>
 </head>
 <body>
   <h1>Cronómetro de Bosses - Imperium AO</h1>
+  <div class="timer-container" id="timers"></div>
 
-  <div id="not-authorized" style="display:none;" role="alert" aria-live="assertive">
-    No estás autorizado para ver los timers.<br/>
-    Contacta al administrador para solicitar acceso.
-  </div>
-
-  <form id="login-form" aria-label="Formulario de inicio de sesión y registro">
-    <input type="email" id="email" placeholder="Email" aria-label="Correo electrónico" required autocomplete="username" />
-    <div class="password-wrapper">
-      <input type="password" id="password" placeholder="Contraseña" aria-label="Contraseña" required autocomplete="current-password" minlength="6" />
-      <span id="toggle-password" class="toggle-password" tabindex="0" role="button" aria-pressed="false" aria-label="Mostrar u ocultar contraseña">👁️</span>
-    </div>
-    <button type="button" id="btn-register" aria-live="polite">Registrarse</button>
-    <button type="button" id="btn-login" aria-live="polite">Iniciar sesión</button>
-    <div id="message" role="alert" aria-live="assertive"></div>
-    <div id="loading-spinner" aria-hidden="true"></div>
-  </form>
-
-  <button id="logout-button" style="display:none;" aria-label="Cerrar sesión">Cerrar sesión</button>
-
-  <div class="timer-container" id="timers" style="display:none;" aria-live="polite"></div>
-
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -281,16 +97,15 @@
       authDomain: "cronometroiao.firebaseapp.com",
       databaseURL: "https://cronometroiao-default-rtdb.firebaseio.com",
       projectId: "cronometroiao",
-      storageBucket: "cronometroiao.firebasestorage.app",
+      storageBucket: "cronometroiao.appspot.com",
       messagingSenderId: "906013460712",
       appId: "1:906013460712:web:fdf87311000fc2288e615d",
       measurementId: "G-K923BGRD3K"
     };
-
+    
     firebase.initializeApp(firebaseConfig);
-
-    const auth = firebase.auth();
     const database = firebase.database();
+    const auth = firebase.auth();
 
     const bosses = [
       { name: "Rey Dragón", min: 1320, max: 1800 },
@@ -309,146 +124,39 @@
       { name: "Gorgona", min: 60, max: 120 }
     ];
 
-    // Utils
-    function minutesToMs(min) { return min * 60 * 1000; }
-    function pad(n) { return n.toString().padStart(2, "0"); }
-
-    // UI Elements
-    const loginForm = document.getElementById("login-form");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const btnRegister = document.getElementById("btn-register");
-    const btnLogin = document.getElementById("btn-login");
-    const logoutButton = document.getElementById("logout-button");
     const timersContainer = document.getElementById("timers");
-    const notAuthorizedDiv = document.getElementById("not-authorized");
-    const messageDiv = document.getElementById("message");
-    const loadingSpinner = document.getElementById("loading-spinner");
-    const togglePasswordBtn = document.getElementById("toggle-password");
+    const timers = {};
 
-    let timers = {};
-
-    function showMessage(text, type = "error") {
-      messageDiv.textContent = text;
-      messageDiv.className = type === "success" ? "success" : "error";
-    }
-    function clearMessage() {
-      messageDiv.textContent = "";
-      messageDiv.className = "";
-    }
-    function setLoading(isLoading) {
-      if (isLoading) {
-        loadingSpinner.style.display = "block";
-        btnLogin.disabled = true;
-        btnRegister.disabled = true;
-      } else {
-        loadingSpinner.style.display = "none";
-        btnLogin.disabled = false;
-        btnRegister.disabled = false;
-      }
-    }
-    function validateEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-    function validatePassword(pass) {
-      return pass.length >= 6;
+    function minutesToMs(min) {
+      return min * 60 * 1000;
     }
 
-    // Toggle password visibility
-    togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
-    togglePasswordBtn.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        togglePasswordVisibility();
-      }
-    });
-    function togglePasswordVisibility() {
-      const type = passwordInput.type === 'password' ? 'text' : 'password';
-      passwordInput.type = type;
-      togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
-      togglePasswordBtn.setAttribute('aria-pressed', type === 'text');
+    function formatRespawn(min, max) {
+      const format = m => {
+        if (m < 60) return `${m} min`;
+        const h = Math.floor(m / 60);
+        const mm = m % 60;
+        return mm === 0 ? `${h}h` : `${h}h ${mm}m`;
+      };
+      return `Respawn: ${format(min)} a ${format(max)}`;
     }
 
-    // Register
-    btnRegister.addEventListener("click", () => {
-      clearMessage();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!validateEmail(email)) {
-        showMessage("Email no válido.");
-        return;
-      }
-      if (!validatePassword(password)) {
-        showMessage("La contraseña debe tener al menos 6 caracteres.");
-        return;
-      }
-      setLoading(true);
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          showMessage("Usuario registrado. Espera la autorización del admin.", "success");
-          loginForm.reset();
-        })
-        .catch(err => {
-          showMessage(err.message);
-        })
-        .finally(() => setLoading(false));
-    });
-
-    // Login
-    btnLogin.addEventListener("click", () => {
-      clearMessage();
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!validateEmail(email)) {
-        showMessage("Email no válido.");
-        return;
-      }
-      if (!validatePassword(password)) {
-        showMessage("La contraseña debe tener al menos 6 caracteres.");
-        return;
-      }
-      setLoading(true);
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(err => {
-          showMessage(err.message);
-        })
-        .finally(() => setLoading(false));
-    });
-
-    // Logout
-    logoutButton.addEventListener("click", () => {
-      auth.signOut();
-    });
-
-    // Check authorization: user must be in allowedUsers in DB
-    async function checkAuthorization(uid) {
-      try {
-        const snapshot = await database.ref('allowedUsers/' + uid).once('value');
-        return snapshot.exists() && snapshot.val() === true;
-      } catch {
-        return false;
-      }
-    }
-
-    // Show timers and initialize listeners
     function showTimers() {
       timersContainer.innerHTML = "";
-      bosses.forEach((boss, i) => {
+      bosses.forEach(boss => {
+        const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
-        timerDiv.id = `timer-${boss.name.replace(/\s+/g, "-")}`;
-        timerDiv.style.animationDelay = (0.1 * i) + "s";
+        timerDiv.id = `timer-${bossKey}`;
         timerDiv.innerHTML = `
-          <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
+          <h2>${boss.name} <span class="icon" id="icon-${bossKey}"></span></h2>
           <div id="${boss.name}-time">00:00:00</div>
-          <div class="respawn-time">Respawn: ${Math.floor(boss.min/60)}h a ${Math.ceil(boss.max/60)}h</div>
+          <div class="respawn-time">${formatRespawn(boss.min, boss.max)}</div>
           <div class="controls">
             <button onclick="markDead('${boss.name}')">Murió ahora</button>
             <button onclick="resetTimer('${boss.name}')">Reset</button>
           </div>
-          <div id="warning-${boss.name.replace(/\s+/g, "-")}" class="warning"></div>
+          <div id="warning-${bossKey}" class="warning"></div>
         `;
         timersContainer.appendChild(timerDiv);
       });
@@ -469,7 +177,6 @@
       timersContainer.style.display = "flex";
     }
 
-    // Timer logic
     function startTimer(bossName, deathTimestamp) {
       if (timers[bossName]) clearInterval(timers[bossName]);
 
@@ -488,9 +195,9 @@
         const now = Date.now();
         const diff = now - deathTime;
 
-        const hrs = pad(Math.floor(diff / 3600000));
-        const mins = pad(Math.floor((diff % 3600000) / 60000));
-        const secs = pad(Math.floor((diff % 60000) / 1000));
+        const hrs = String(Math.floor(diff / 3600000)).padStart(2, "0");
+        const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+        const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
 
         display.textContent = `${hrs}:${mins}:${secs}`;
 
@@ -507,14 +214,12 @@
       }, 1000);
     }
 
-    // Marcar boss como muerto
     window.markDead = function(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
       const nowISO = new Date().toISOString();
       database.ref('bosses/' + bossKey).set({ deathTime: nowISO });
     }
 
-    // Resetear timer
     window.resetTimer = function(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
       if (timers[bossName]) {
@@ -527,30 +232,8 @@
       database.ref('bosses/' + bossKey).remove();
     }
 
-    // Estado auth
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        const isAllowed = await checkAuthorization(user.uid);
-        if (isAllowed) {
-          loginForm.style.display = "none";
-          notAuthorizedDiv.style.display = "none";
-          logoutButton.style.display = "block";
-          showTimers();
-        } else {
-          loginForm.style.display = "none";
-          notAuthorizedDiv.style.display = "block";
-          timersContainer.style.display = "none";
-          logoutButton.style.display = "block";
-        }
-        clearMessage();
-      } else {
-        loginForm.style.display = "block";
-        notAuthorizedDiv.style.display = "none";
-        timersContainer.style.display = "none";
-        logoutButton.style.display = "none";
-        clearMessage();
-      }
-    });
+    // Llamar showTimers si no hay login requerido
+    showTimers();
   </script>
 </body>
 </html>
