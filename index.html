@@ -15,11 +15,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.5s ease;
     }
     h1 {
       font-size: 2.5rem;
       color: gold;
       text-shadow: 0 0 10px #000;
+      margin-bottom: 1rem;
     }
     .timer-container {
       display: flex;
@@ -27,19 +30,40 @@
       justify-content: center;
       gap: 1.5rem;
       margin-top: 2rem;
+      animation: fadeIn 0.7s ease forwards;
+      max-width: 1000px;
+      width: 100%;
     }
     .timer {
       background: rgba(10, 20, 40, 0.85);
       border: 2px solid gold;
       border-radius: 12px;
       padding: 1rem;
-      width: 250px;
+      width: 260px;
       text-align: center;
       box-shadow: 0 0 15px #000;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+      animation-delay: 0.2s;
+      transition: box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .timer:hover {
+      box-shadow: 0 0 25px gold;
     }
     .timer h2 {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       color: #87cefa;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+    .respawn-time {
+      font-size: 0.9rem;
+      color: #cce6ff;
+      margin-bottom: 0.8rem;
+      font-style: italic;
+      user-select: text;
     }
     .controls button {
       margin: 0.25rem;
@@ -52,20 +76,29 @@
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
       transition: background 0.3s, transform 0.1s;
+      user-select: none;
     }
-    .controls button:hover {
+    .controls button:hover:enabled {
       background: #0055aa;
       transform: scale(1.05);
+    }
+    .controls button:disabled {
+      background: #1a2a4a;
+      cursor: not-allowed;
+      border-color: #555;
+      transform: none;
     }
     .warning {
       margin-top: 0.5rem;
       color: #ffae00;
       font-weight: bold;
       min-height: 1.2em;
+      user-select: none;
     }
     .icon {
       margin-left: 5px;
       font-size: 1.1rem;
+      user-select: none;
     }
     #login-form, #logout-button, #not-authorized {
       margin-top: 1.5rem;
@@ -76,6 +109,8 @@
       width: 320px;
       box-shadow: 0 0 15px #000;
       text-align: center;
+      animation: fadeIn 0.5s ease forwards;
+      user-select: none;
     }
     #login-form input {
       display: block;
@@ -86,6 +121,13 @@
       border: 1px solid #87cefa;
       font-family: 'MedievalSharp', cursive;
       font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    #login-form input:focus {
+      border-color: #d0e7ff;
+      outline: none;
+      background-color: #132d5a;
+      color: #d0e7ff;
     }
     #login-form button {
       margin-top: 1rem;
@@ -99,30 +141,134 @@
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
       transition: background 0.3s, transform 0.1s;
+      user-select: none;
     }
-    #login-form button:hover {
+    #login-form button:hover:enabled {
       background: #0055aa;
       transform: scale(1.05);
+    }
+    #login-form button:disabled {
+      background: #1a2a4a;
+      cursor: not-allowed;
+      border-color: #555;
+      transform: none;
+    }
+    #logout-button {
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'MedievalSharp', cursive;
+      background: #800000;
+      color: #ffd0d0;
+      border: 2px solid #ff8080;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      width: 320px;
+      transition: background 0.3s ease;
+      user-select: none;
+    }
+    #logout-button:hover {
+      background: #aa0000;
+    }
+    #not-authorized {
+      color: #ff4c4c;
+      font-weight: bold;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+    #message {
+      margin-top: 0.8rem;
+      min-height: 1.4em;
+      font-weight: bold;
+      font-family: 'MedievalSharp', cursive;
+      user-select: none;
+    }
+    #message.success {
+      color: #6ce06c;
+    }
+    #message.error {
+      color: #ff4c4c;
+    }
+    #loading-spinner {
+      margin: 1rem auto;
+      border: 4px solid #87cefa;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      display: none;
+      user-select: none;
+    }
+    .password-wrapper {
+      position: relative;
+      width: 90%;
+      margin: 0.5rem auto;
+    }
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+      box-sizing: border-box;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #87cefa;
+      user-select: none;
+    }
+
+    /* Animations */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      #login-form, #logout-button, #not-authorized {
+        width: 90%;
+      }
+      .timer {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
   <h1>Cronómetro de Bosses - Imperium AO</h1>
 
-  <div id="not-authorized" style="display:none; color: #ff4c4c; font-weight:bold;">
-    No estás autorizado para ver los timers.
+  <div id="not-authorized" style="display:none;" role="alert" aria-live="assertive">
+    No estás autorizado para ver los timers.<br/>
+    Contacta al administrador para solicitar acceso.
   </div>
 
-  <div id="login-form">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Contraseña" />
-    <button id="btn-register">Registrarse</button>
-    <button id="btn-login">Iniciar sesión</button>
-  </div>
+  <form id="login-form" aria-label="Formulario de inicio de sesión y registro">
+    <input type="email" id="email" placeholder="Email" aria-label="Correo electrónico" required autocomplete="username" />
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Contraseña" aria-label="Contraseña" required autocomplete="current-password" minlength="6" />
+      <span id="toggle-password" class="toggle-password" tabindex="0" role="button" aria-pressed="false" aria-label="Mostrar u ocultar contraseña">👁️</span>
+    </div>
+    <button type="button" id="btn-register" aria-live="polite">Registrarse</button>
+    <button type="button" id="btn-login" aria-live="polite">Iniciar sesión</button>
+    <div id="message" role="alert" aria-live="assertive"></div>
+    <div id="loading-spinner" aria-hidden="true"></div>
+  </form>
 
-  <button id="logout-button" style="display:none;">Cerrar sesión</button>
+  <button id="logout-button" style="display:none;" aria-label="Cerrar sesión">Cerrar sesión</button>
 
-  <div class="timer-container" id="timers" style="display:none;"></div>
+  <div class="timer-container" id="timers" style="display:none;" aria-live="polite"></div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -163,11 +309,11 @@
       { name: "Gorgona", min: 16.6667, max: 61.0167 }
     ];
 
-    function minutesToMs(min) {
-      return min * 60 * 1000;
-    }
+    // Utils
+    function minutesToMs(min) { return min * 60 * 1000; }
+    function pad(n) { return n.toString().padStart(2, "0"); }
 
-    // Elementos UI
+    // UI Elements
     const loginForm = document.getElementById("login-form");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
@@ -176,19 +322,128 @@
     const logoutButton = document.getElementById("logout-button");
     const timersContainer = document.getElementById("timers");
     const notAuthorizedDiv = document.getElementById("not-authorized");
+    const messageDiv = document.getElementById("message");
+    const loadingSpinner = document.getElementById("loading-spinner");
+    const togglePasswordBtn = document.getElementById("toggle-password");
 
     let timers = {};
 
-    // Función para mostrar los timers
+    function showMessage(text, type = "error") {
+      messageDiv.textContent = text;
+      messageDiv.className = type === "success" ? "success" : "error";
+    }
+    function clearMessage() {
+      messageDiv.textContent = "";
+      messageDiv.className = "";
+    }
+    function setLoading(isLoading) {
+      if (isLoading) {
+        loadingSpinner.style.display = "block";
+        btnLogin.disabled = true;
+        btnRegister.disabled = true;
+      } else {
+        loadingSpinner.style.display = "none";
+        btnLogin.disabled = false;
+        btnRegister.disabled = false;
+      }
+    }
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    function validatePassword(pass) {
+      return pass.length >= 6;
+    }
+
+    // Toggle password visibility
+    togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
+    togglePasswordBtn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePasswordVisibility();
+      }
+    });
+    function togglePasswordVisibility() {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
+      togglePasswordBtn.setAttribute('aria-pressed', type === 'text');
+    }
+
+    // Register
+    btnRegister.addEventListener("click", () => {
+      clearMessage();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!validateEmail(email)) {
+        showMessage("Email no válido.");
+        return;
+      }
+      if (!validatePassword(password)) {
+        showMessage("La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+      setLoading(true);
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          showMessage("Usuario registrado. Espera la autorización del admin.", "success");
+          loginForm.reset();
+        })
+        .catch(err => {
+          showMessage(err.message);
+        })
+        .finally(() => setLoading(false));
+    });
+
+    // Login
+    btnLogin.addEventListener("click", () => {
+      clearMessage();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!validateEmail(email)) {
+        showMessage("Email no válido.");
+        return;
+      }
+      if (!validatePassword(password)) {
+        showMessage("La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+      setLoading(true);
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(err => {
+          showMessage(err.message);
+        })
+        .finally(() => setLoading(false));
+    });
+
+    // Logout
+    logoutButton.addEventListener("click", () => {
+      auth.signOut();
+    });
+
+    // Check authorization: user must be in allowedUsers in DB
+    async function checkAuthorization(uid) {
+      try {
+        const snapshot = await database.ref('allowedUsers/' + uid).once('value');
+        return snapshot.exists() && snapshot.val() === true;
+      } catch {
+        return false;
+      }
+    }
+
+    // Show timers and initialize listeners
     function showTimers() {
       timersContainer.innerHTML = "";
-      bosses.forEach(boss => {
+      bosses.forEach((boss, i) => {
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
         timerDiv.id = `timer-${boss.name.replace(/\s+/g, "-")}`;
+        timerDiv.style.animationDelay = (0.1 * i) + "s";
         timerDiv.innerHTML = `
           <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
           <div id="${boss.name}-time">00:00:00</div>
+          <div class="respawn-time">Respawn: ${Math.floor(boss.min/60)} a ${Math.ceil(boss.max/60)} minutos</div>
           <div class="controls">
             <button onclick="markDead('${boss.name}')">Murió ahora</button>
             <button onclick="resetTimer('${boss.name}')">Reset</button>
@@ -214,7 +469,7 @@
       timersContainer.style.display = "flex";
     }
 
-    // Funciones de temporizador
+    // Timer logic
     function startTimer(bossName, deathTimestamp) {
       if (timers[bossName]) clearInterval(timers[bossName]);
 
@@ -231,9 +486,9 @@
         const now = Date.now();
         const diff = now - deathTime;
 
-        const hrs = String(Math.floor(diff / 3600000)).padStart(2, "0");
-        const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-        const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+        const hrs = pad(Math.floor(diff / 3600000));
+        const mins = pad(Math.floor((diff % 3600000) / 60000));
+        const secs = pad(Math.floor((diff % 60000) / 1000));
 
         display.textContent = `${hrs}:${mins}:${secs}`;
 
@@ -268,66 +523,33 @@
       database.ref('bosses/' + bossKey).remove();
     }
 
-    // Registro y login
-    btnRegister.addEventListener("click", () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!email || !password) {
-        alert("Por favor, completa email y contraseña.");
-        return;
-      }
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("Usuario registrado. Espera a que te autoricen."))
-        .catch(error => alert("Error al registrar: " + error.message));
-    });
-
-    btnLogin.addEventListener("click", () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!email || !password) {
-        alert("Por favor, completa email y contraseña.");
-        return;
-      }
-
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(error => alert("Error al iniciar sesión: " + error.message));
-    });
-
-    logoutButton.addEventListener("click", () => {
-      auth.signOut();
-    });
-
-    // Verificar auth y whitelist
-    auth.onAuthStateChanged(user => {
+    // On auth state change
+    auth.onAuthStateChanged(async user => {
       if (user) {
-        // Usuario logueado, chequear whitelist
-        database.ref('allowedUsers/' + user.uid).once('value').then(snapshot => {
-          const allowed = snapshot.val();
-          if (allowed) {
-            // Autorizado
-            loginForm.style.display = "none";
-            logoutButton.style.display = "block";
-            notAuthorizedDiv.style.display = "none";
-            showTimers();
-          } else {
-            // No autorizado
-            loginForm.style.display = "none";
-            logoutButton.style.display = "block";
-            timersContainer.style.display = "none";
-            notAuthorizedDiv.style.display = "block";
-          }
-        });
+        const authorized = await checkAuthorization(user.uid);
+        if (authorized) {
+          loginForm.style.display = "none";
+          notAuthorizedDiv.style.display = "none";
+          logoutButton.style.display = "block";
+          showTimers();
+        } else {
+          loginForm.style.display = "none";
+          notAuthorizedDiv.style.display = "block";
+          timersContainer.style.display = "none";
+          logoutButton.style.display = "block";
+        }
       } else {
-        // No logueado
         loginForm.style.display = "block";
-        logoutButton.style.display = "none";
-        timersContainer.style.display = "none";
         notAuthorizedDiv.style.display = "none";
+        timersContainer.style.display = "none";
+        logoutButton.style.display = "none";
+        clearMessage();
       }
     });
+
+    // Expose functions for buttons inline handlers
+    window.markDead = markDead;
+    window.resetTimer = resetTimer;
   </script>
 </body>
 </html>
