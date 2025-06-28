@@ -1,166 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cronómetro de Bosses - Imperium AO</title>
-<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
-<style>
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDE1ODMxZzh1bjl2aThmbGkxbTdwMXQwbTNwaHl0czdhYWpnOGZ3byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wTbpsFBs4Ek5W/giphy.gif') center center / cover no-repeat;
-    opacity: 0.15;
-    z-index: -1;
-    pointer-events: none;
-    filter: brightness(0.8);
-  }
-  body {
-    margin: 0;
-    padding: 2rem;
-    font-family: 'MedievalSharp', cursive;
-    background-color: #0a0f1a;
-    color: #d0e7ff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 0;
-  }
-  h1 {
-    font-size: 2.5rem;
-    color: gold;
-    text-shadow: 0 0 10px #000;
-    position: relative;
-    z-index: 1;
-    margin-bottom: 1rem;
-  }
-  #login-container, #timers-container {
-    background: rgba(10, 20, 40, 0.9);
-    border: 2px solid gold;
-    border-radius: 12px;
-    padding: 2rem;
-    width: 320px;
-    box-shadow: 0 0 15px #000;
-    margin-top: 3rem;
-    position: relative;
-    z-index: 1;
-  }
-  #timers-container {
-    display: none;
-    width: auto;
-    padding: 1rem 2rem 2rem;
-  }
-  input[type=email], input[type=password] {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    font-family: 'MedievalSharp', cursive;
-    font-weight: bold;
-    border: 2px solid #87cefa;
-    border-radius: 6px;
-    font-size: 1rem;
-    text-align: center;
-    color: #0a0f1a;
-  }
-  button {
-    width: 100%;
-    padding: 0.5rem;
-    background: #003366;
-    color: #d0e7ff;
-    border: 2px solid #87cefa;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-family: 'MedievalSharp', cursive;
-    transition: background 0.3s, transform 0.1s;
-    font-size: 1.1rem;
-  }
-  button:hover {
-    background: #0055aa;
-    transform: scale(1.05);
-  }
-  .warning {
-    margin-top: 0.5rem;
-    color: #ff4500;
-    min-height: 1.2em;
-    text-align: center;
-  }
-  .timer-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-    position: relative;
-  }
-  .timer {
-    background: rgba(10, 20, 40, 0.85);
-    border: 2px solid gold;
-    border-radius: 12px;
-    padding: 1rem;
-    width: 250px;
-    text-align: center;
-    box-shadow: 0 0 15px #000;
-  }
-  .timer h2 {
-    margin-bottom: 0.2rem;
-    color: #87cefa;
-  }
-  .respawn-time {
-    color: #ccc;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-  }
-  .controls button {
-    margin: 0.25rem;
-    padding: 0.5rem 1rem;
-    background: #003366;
-    color: #d0e7ff;
-    border: 2px solid #87cefa;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-family: 'MedievalSharp', cursive;
-    transition: background 0.3s, transform 0.1s;
-  }
-  .controls button:hover {
-    background: #0055aa;
-    transform: scale(1.05);
-  }
-  .icon {
-    margin-left: 5px;
-    font-size: 1.1rem;
-  }
-  #logout-button {
-    margin-top: 1rem;
-    background: #aa0000;
-    border-color: #ff4444;
-  }
-  #logout-button:hover {
-    background: #ff4444;
-    transform: scale(1.05);
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cronómetro de Bosses - Imperium AO</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: 'MedievalSharp', cursive;
+      background: #0a0f1a;
+      color: #d0e7ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: gold;
+      text-shadow: 0 0 10px #000;
+    }
+    .timer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .timer {
+      background: rgba(10, 20, 40, 0.85);
+      border: 2px solid gold;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 250px;
+      text-align: center;
+      box-shadow: 0 0 15px #000;
+    }
+    .timer h2 {
+      margin-bottom: 0.5rem;
+      color: #87cefa;
+    }
+    .controls button {
+      margin: 0.25rem;
+      padding: 0.5rem 1rem;
+      background: #003366;
+      color: #d0e7ff;
+      border: 2px solid #87cefa;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'MedievalSharp', cursive;
+      transition: background 0.3s, transform 0.1s;
+    }
+    .controls button:hover {
+      background: #0055aa;
+      transform: scale(1.05);
+    }
+    .warning {
+      margin-top: 0.5rem;
+      color: #ffae00;
+      font-weight: bold;
+      min-height: 1.2em;
+    }
+    .icon {
+      margin-left: 5px;
+      font-size: 1.1rem;
+    }
+    #login-form, #logout-button, #not-authorized {
+      margin-top: 1.5rem;
+      background: rgba(10, 20, 40, 0.85);
+      border: 2px solid gold;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 320px;
+      box-shadow: 0 0 15px #000;
+      text-align: center;
+    }
+    #login-form input {
+      display: block;
+      width: 90%;
+      margin: 0.5rem auto;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #87cefa;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1rem;
+    }
+    #login-form button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      width: 95%;
+      background: #003366;
+      color: #d0e7ff;
+      border: 2px solid #87cefa;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'MedievalSharp', cursive;
+      transition: background 0.3s, transform 0.1s;
+    }
+    #login-form button:hover {
+      background: #0055aa;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-
   <h1>Cronómetro de Bosses - Imperium AO</h1>
 
-  <div id="login-container">
-    <h2>Iniciar Sesión / Registrar</h2>
-    <input type="email" id="email" placeholder="Email" autocomplete="username" />
-    <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
-    <button id="login-btn">Iniciar Sesión</button>
-    <button id="register-btn" style="margin-top: 0.5rem;">Registrar Nuevo Usuario</button>
-    <div class="warning" id="auth-error"></div>
+  <div id="not-authorized" style="display:none; color: #ff4c4c; font-weight:bold;">
+    No estás autorizado para ver los timers.
   </div>
 
-  <div id="timers-container">
-    <button id="logout-button">Cerrar Sesión</button>
-    <div class="timer-container" id="timers"></div>
+  <div id="login-form">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button id="btn-register">Registrarse</button>
+    <button id="btn-login">Iniciar sesión</button>
   </div>
+
+  <button id="logout-button" style="display:none;">Cerrar sesión</button>
+
+  <div class="timer-container" id="timers" style="display:none;"></div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -184,16 +146,6 @@
     const auth = firebase.auth();
     const database = firebase.database();
 
-    const loginContainer = document.getElementById("login-container");
-    const timersContainer = document.getElementById("timers-container");
-    const authError = document.getElementById("auth-error");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginBtn = document.getElementById("login-btn");
-    const registerBtn = document.getElementById("register-btn");
-    const logoutBtn = document.getElementById("logout-button");
-    const timersDiv = document.getElementById("timers");
-
     const bosses = [
       { name: "Rey Dragón", min: 1320, max: 1800 },
       { name: "Dragón Legendario", min: 960, max: 1440 },
@@ -208,31 +160,34 @@
       { name: "Abyssaria", min: 210, max: 540 },
       { name: "Garveloth", min: 30, max: 45 },
       { name: "Vampiro Transformado", min: 30, max: 45 },
-      { name: "Gorgona", min: 16.6667, max: 61.0167 },
-      { name: "Serpiente", min: 1, max: 2 }
+      { name: "Gorgona", min: 16.6667, max: 61.0167 }
     ];
 
     function minutesToMs(min) {
       return min * 60 * 1000;
     }
 
-    function formatHours(mins) {
-      return (mins / 60).toFixed(2);
-    }
+    // Elementos UI
+    const loginForm = document.getElementById("login-form");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const btnRegister = document.getElementById("btn-register");
+    const btnLogin = document.getElementById("btn-login");
+    const logoutButton = document.getElementById("logout-button");
+    const timersContainer = document.getElementById("timers");
+    const notAuthorizedDiv = document.getElementById("not-authorized");
 
     let timers = {};
 
-    function renderTimers() {
-      timersDiv.innerHTML = "";
+    // Función para mostrar los timers
+    function showTimers() {
+      timersContainer.innerHTML = "";
       bosses.forEach(boss => {
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
         timerDiv.id = `timer-${boss.name.replace(/\s+/g, "-")}`;
         timerDiv.innerHTML = `
           <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
-          <div class="respawn-time">
-            Respawn: ${formatHours(boss.min)} - ${formatHours(boss.max)} horas
-          </div>
           <div id="${boss.name}-time">00:00:00</div>
           <div class="controls">
             <button onclick="markDead('${boss.name}')">Murió ahora</button>
@@ -240,10 +195,26 @@
           </div>
           <div id="warning-${boss.name.replace(/\s+/g, "-")}" class="warning"></div>
         `;
-        timersDiv.appendChild(timerDiv);
+        timersContainer.appendChild(timerDiv);
       });
+
+      bosses.forEach(boss => {
+        const bossKey = boss.name.replace(/\s+/g, "-");
+        const ref = database.ref('bosses/' + bossKey + '/deathTime');
+        ref.on('value', snapshot => {
+          const deathTime = snapshot.val();
+          if (deathTime) {
+            startTimer(boss.name, deathTime);
+          } else {
+            resetTimer(boss.name);
+          }
+        });
+      });
+
+      timersContainer.style.display = "flex";
     }
 
+    // Funciones de temporizador
     function startTimer(bossName, deathTimestamp) {
       if (timers[bossName]) clearInterval(timers[bossName]);
 
@@ -269,4 +240,94 @@
         if (diff >= minMs && diff < maxMs) {
           iconSpan.textContent = "⏳";
           warningDiv.textContent = "";
+        } else if (diff >= maxMs) {
+          iconSpan.textContent = "⚠️";
+          warningDiv.textContent = "Debería haber spawneado ya";
+        } else {
+          iconSpan.textContent = "";
+          warningDiv.textContent = "";
         }
+      }, 1000);
+    }
+
+    function markDead(bossName) {
+      const bossKey = bossName.replace(/\s+/g, "-");
+      const nowISO = new Date().toISOString();
+      database.ref('bosses/' + bossKey).set({ deathTime: nowISO });
+    }
+
+    function resetTimer(bossName) {
+      const bossKey = bossName.replace(/\s+/g, "-");
+      clearInterval(timers[bossName]);
+      delete timers[bossName];
+
+      document.getElementById(`${bossName}-time`).textContent = "00:00:00";
+      document.getElementById(`icon-${bossKey}`).textContent = "";
+      document.getElementById(`warning-${bossKey}`).textContent = "";
+
+      database.ref('bosses/' + bossKey).remove();
+    }
+
+    // Registro y login
+    btnRegister.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        alert("Por favor, completa email y contraseña.");
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => alert("Usuario registrado. Espera a que te autoricen."))
+        .catch(error => alert("Error al registrar: " + error.message));
+    });
+
+    btnLogin.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        alert("Por favor, completa email y contraseña.");
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(error => alert("Error al iniciar sesión: " + error.message));
+    });
+
+    logoutButton.addEventListener("click", () => {
+      auth.signOut();
+    });
+
+    // Verificar auth y whitelist
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // Usuario logueado, chequear whitelist
+        database.ref('allowedUsers/' + user.uid).once('value').then(snapshot => {
+          const allowed = snapshot.val();
+          if (allowed) {
+            // Autorizado
+            loginForm.style.display = "none";
+            logoutButton.style.display = "block";
+            notAuthorizedDiv.style.display = "none";
+            showTimers();
+          } else {
+            // No autorizado
+            loginForm.style.display = "none";
+            logoutButton.style.display = "block";
+            timersContainer.style.display = "none";
+            notAuthorizedDiv.style.display = "block";
+          }
+        });
+      } else {
+        // No logueado
+        loginForm.style.display = "block";
+        logoutButton.style.display = "none";
+        timersContainer.style.display = "none";
+        notAuthorizedDiv.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
