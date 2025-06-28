@@ -71,7 +71,6 @@
       transition: border-color 0.3s, background-color 0.3s, color 0.3s;
       user-select: text;
     }
-
     body.light #login-form input[type="email"],
     body.light #login-form input[type="password"] {
       background: #fff;
@@ -143,7 +142,6 @@
       user-select: none;
     }
 
-    /* Ajustes logout button */
     #logout {
       margin-top: 1rem;
       background: darkred;
@@ -162,7 +160,6 @@
       background: red;
     }
 
-    /* ==== Timer container ==== */
     .timer-container {
       display: none;
       flex-wrap: wrap;
@@ -184,7 +181,6 @@
       flex-direction: column;
       user-select: none;
     }
-
     body.light .timer {
       background: #f9f9f9cc;
       border-color: #daa520;
@@ -280,7 +276,6 @@
       user-select: none;
     }
 
-    /* ==== Herramientas usuario ==== */
     #tools {
       margin-top: 1rem;
       width: 320px;
@@ -308,7 +303,6 @@
       color: #222;
       border-color: #6699cc;
     }
-
     #tools button {
       background: #003366;
       color: #d0e7ff;
@@ -337,7 +331,6 @@
       color: #fff;
     }
 
-    /* ==== Tema Claro / Oscuro ==== */
     #themeToggle {
       margin-top: 2rem;
       padding: 0.5rem 1rem;
@@ -370,7 +363,6 @@
       color: #fff;
     }
 
-    /* ==== Input hora para "murió" ==== */
     .death-time-input {
       margin-top: 0.6rem;
       width: 90%;
@@ -410,16 +402,14 @@
 
   <button id="logout" style="display: none;" onclick="logout()">Cerrar sesión</button>
 
-  <!-- Herramientas usuario: Buscar, sincronizar, filtrar -->
   <div id="tools" style="display:none;">
     <input type="text" id="searchInput" placeholder="Buscar boss..." oninput="filterBosses()" />
-    <button onclick="syncTimers()">Sincronizar Timers</button>
+    <button onclick="toggleVisibleBosses()">Mostrar bosses activos</button>
   </div>
 
   <button id="themeToggle" style="display:none;" onclick="toggleTheme()">Cambiar a tema claro</button>
 
   <div class="timer-container" id="timers"></div>
-
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -468,6 +458,7 @@
 
     let timers = {};
     let currentTheme = "dark";
+    let showOnlyActive = false;
 
     function pad(n) {
       return String(n).padStart(2, "0");
@@ -482,11 +473,28 @@
       return `Respawn: ${fmt(min)} a ${fmt(max)}`;
     }
 
-    // Muestra timers filtrados según búsqueda
+    // Muestra timers filtrados según búsqueda y filtro de bosses activos
     function showTimers(filter = "") {
       timersContainer.innerHTML = "";
       const filteredBosses = bosses.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
-      filteredBosses.forEach(boss => {
+      const bossesToShow = showOnlyActive ? filteredBosses.filter(boss => {
+        // Chequear si boss ya puede spawnear o spawneo (local state)
+        const deathTimeStr = localDeathTimes[boss.name];
+        if (!deathTimeStr) return false;
+        const deathTime = new Date(deathTimeStr).getTime();
+        const now = Date.now();
+        const diff = now - deathTime;
+        const minMs = minutesToMs(boss.min);
+        const maxMs = minutesToMs(boss.max);
+        return diff >= minMs;
+      }) : filteredBosses;
+
+      if (bossesToShow.length === 0) {
+        timersContainer.style.display = "none";
+        return;
+      }
+
+      bossesToShow.forEach(boss => {
         const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
@@ -522,13 +530,17 @@
         const ref = database.ref("bosses/" + bossKey + "/deathTime");
         ref.on("value", snapshot => {
           const deathTime = snapshot.val();
+          localDeathTimes[boss.name] = deathTime;
           if (deathTime) startTimer(boss.name, deathTime);
           else resetTimer(boss.name);
         });
       });
 
-      timersContainer.style.display = filteredBosses.length ? "flex" : "none";
+      timersContainer.style.display = "flex";
     }
+
+    // Para guardar local deathTimes en memoria para filtrar
+    const localDeathTimes = {};
 
     function startTimer(bossName, deathTimestamp) {
       if (timers[bossName]) clearInterval(timers[bossName]);
@@ -597,6 +609,7 @@
       const bossKey = bossName.replace(/\s+/g, "-");
       clearInterval(timers[bossName]);
       delete timers[bossName];
+      delete localDeathTimes[bossName];
       const display = document.getElementById(`${bossName}-time`);
       const iconSpan = document.getElementById(`icon-${bossKey}`);
       const warningDiv = document.getElementById(`warning-${bossKey}`);
@@ -671,9 +684,11 @@
       showTimers(searchInput.value.trim());
     }
 
-    // Sincronizar timers manual (simula actualizar todos los listeners)
-    function syncTimers() {
-      alert("Sincronizando timers...");
+    // Mostrar solo bosses activos (que pueden spawnear o ya spawnearon)
+    function toggleVisibleBosses() {
+      showOnlyActive = !showOnlyActive;
+      const btn = toolsDiv.querySelector("button");
+      btn.textContent = showOnlyActive ? "Mostrar todos los bosses" : "Mostrar bosses activos";
       showTimers(searchInput.value.trim());
     }
 
