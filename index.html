@@ -538,19 +538,23 @@
     const searchInput = document.getElementById("searchInput");
     const loadingScreen = document.getElementById("loading-screen");
 
-   const bosses = [
-  { name: "Rey Dragón", min: 1320, max: 1440 },      // 22 - 24 hs
-  { name: "Gorgona", min: 60, max: 75 },             // 1 - 1.25 hs
-  { name: "Vampiro Transformado", min: 60, max: 90 },// 1 - 1.5 hs
-  { name: "Garveloth", min: 30, max: 45 },           // 30 - 45 min
-  { name: "Dark Worm", min: 40, max: 60 },           // 40 - 60 min
-  { name: "Demon Lord", min: 30, max: 40 },          // 30 - 40 min
-  { name: "King of Darkness", min: 60, max: 90 },    // 60 - 90 min
-  { name: "Chaos", min: 90, max: 120 },               // 90 - 120 min
-  { name: "Doom Knight", min: 30, max: 45 },          // 30 - 45 min
-  { name: "Skeleton Lord", min: 60, max: 75 },        // 60 - 75 min
-  { name: "Vampire Lord", min: 60, max: 90 }          // 60 - 90 min
+const bosses = [
+  { name: "Rey Dragón", min: 1320, max: 1800 },
+  { name: "Dragón Legendario", min: 960, max: 1440 },
+  { name: "Gran Dragón Negro", min: 720, max: 1200 },
+  { name: "Gran Dragón Rojo", min: 720, max: 1200 },
+  { name: "Archimago Abisal", min: 540, max: 1080 },
+  { name: "Gran Dragón Azul", min: 480, max: 840 },
+  { name: "Eishner", min: 540, max: 1080 },
+  { name: "Gran Dragón Verde", min: 120, max: 300 },
+  { name: "Djinn", min: 420, max: 900 },
+  { name: "Lilith", min: 120, max: 210 },
+  { name: "Abyssaria", min: 210, max: 540 },
+  { name: "Garveloth", min: 30, max: 45 },
+  { name: "Vampiro Transformado", min: 30, max: 45 },
+  { name: "Gorgona", min: 60, max: 120 }
 ];
+
 
 
     let timers = {};
