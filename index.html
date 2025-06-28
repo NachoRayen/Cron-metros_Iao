@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cronómetro de Bosses - Imperium AO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      margin: 0;
+    }
+    h1 {
+      color: #ffd700;
+      margin-bottom: 1rem;
+    }
+    .timer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      max-width: 1000px;
+      width: 100%;
+    }
+    .timer {
+      background: #333;
+      border-radius: 10px;
+      padding: 1rem;
+      width: 260px;
+      box-shadow: 0 0 10px #000;
+      text-align: center;
+      position: relative;
+    }
+    .timer h2 {
+      margin-bottom: 0.3rem;
+      font-size: 1.3rem;
+    }
+    .respawn-info {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 0.6rem;
+    }
+    .time-display {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 0.6rem;
+      letter-spacing: 2px;
+    }
+    .controls button {
+      margin: 0.2rem;
+      padding: 0.5rem 1rem;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .controls button:hover {
+      background: #666;
+    }
+    .spawn-alert {
+      color: #00ff00;
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+    .late-alert {
+      color: #ff5050;
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+    .icon {
+      margin-left: 6px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cronómetro de Bosses - Imperium AO</h1>
+  <div class="timer-container" id="timers"></div>
+
+  <script>
+    // Lista de bosses con tiempo mínimo y máximo en milisegundos
+    const bosses = [
+      { name: "Rey Dragón", minDelay: 22 * 3600 * 1000, maxDelay: 30 * 3600 * 1000 },
+      { name: "Dragón Legendario", minDelay: 16 * 3600 * 1000, maxDelay: 24 * 3600 * 1000 },
+      { name: "Gran Dragón Negro", minDelay: 12 * 3600 * 1000, maxDelay: 20 * 3600 * 1000 },
+      { name: "Gran Dragón Rojo", minDelay: 12 * 3600 * 1000, maxDelay: 20 * 3600 * 1000 },
+      { name: "Archimago Abisal", minDelay: 9 * 3600 * 1000, maxDelay: 18 * 3600 * 1000 },
+      { name: "Gran Dragón Azul", minDelay: 8 * 3600 * 1000, maxDelay: 14 * 3600 * 1000 },
+      { name: "Eishner", minDelay: 9 * 3600 * 1000, maxDelay: 18 * 3600 * 1000 },
+      { name: "Gran Dragón Verde", minDelay: 2 * 3600 * 1000, maxDelay: 5 * 3600 * 1000 },
+      { name: "Djinn", minDelay: 7 * 3600 * 1000, maxDelay: 15 * 3600 * 1000 },
+      { name: "Lilith", minDelay: (2 * 3600 + 30 * 60) * 1000, maxDelay: (3 * 3600 + 30 * 60) * 1000 },
+      { name: "Abyssaria", minDelay: (3 * 3600 + 30 * 60) * 1000, maxDelay: 9 * 3600 * 1000 },
+      { name: "Garveloth", minDelay: 30 * 60 * 1000, maxDelay: 45 * 60 * 1000 },
+      { name: "Vampiro Transformado", minDelay: 30 * 60 * 1000, maxDelay: 45 * 60 * 1000 },
+      { name: "Gorgona", minDelay: (16 * 60 + 40) * 1000, maxDelay: (61 * 60) * 1000 }
+    ];
+
+    const timersContainer = document.getElementById("timers");
+    const timers = {};
+
+    // Función para convertir ms a formato h m
+    function msToTime(duration) {
+      const hours = Math.floor(duration / 3600000);
+      const minutes = Math.floor((duration % 3600000) / 60000);
+      return `${hours}h ${minutes}m`;
+    }
+
+    // Formatear ms a HH:MM:SS
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const s = String(totalSeconds % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    // Crear la UI para cada boss
+    bosses.forEach(boss => {
+      const bossId = boss.name.replace(/\s+/g, '_');
+      const timerDiv = document.createElement("div");
+      timerDiv.className = "timer";
+
+      timerDiv.innerHTML = `
+        <h2 id="${bossId}-title">${boss.name}</h2>
+        <div class="respawn-info">Delay mínimo: ${msToTime(boss.minDelay)} - máximo: ${msToTime(boss.maxDelay)}</div>
+        <div class="time-display" id="${bossId}-time">00:00:00</div>
+        <div id="${bossId}-alert"></div>
+        <div class="controls">
+          <button id="${bossId}-start">Murió ahora</button>
+          <button id="${bossId}-reset">Resetear</button>
+        </div>
+      `;
+
+      timersContainer.appendChild(timerDiv);
+
+      document.getElementById(`${bossId}-start`).onclick = () => startRespawnTimer(boss, bossId);
+      document.getElementById(`${bossId}-reset`).onclick = () => resetRespawnTimer(bossId);
+    });
+
+    function startRespawnTimer(boss, bossId) {
+      if (timers[bossId]) clearInterval(timers[bossId]);
+
+      const startTime = Date.now();
+      const timeDisplay = document.getElementById(`${bossId}-time`);
+      const alertDiv = document.getElementById(`${bossId}-alert`);
+      const title = document.getElementById(`${bossId}-title`);
+
+      timers[bossId] = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        timeDisplay.textContent = formatTime(elapsed);
+
+        if (elapsed >= boss.minDelay && elapsed < boss.maxDelay) {
+          title.innerHTML = boss.name + ' <span class="icon">⏳</span>';
+          alertDiv.innerHTML = '<div class="spawn-alert">¡Puede haber respawneado!</div>';
+        } else if (elapsed >= boss.maxDelay) {
+          title.innerHTML = boss.name + ' <span class="icon">❗</span>';
+          alertDiv.innerHTML = '<div class="late-alert">¡DEBERÍA haber respawneado!</div>';
+        } else {
+          title.innerHTML = boss.name;
+          alertDiv.innerHTML = '';
+        }
+      }, 1000);
+    }
+
+    function resetRespawnTimer(bossId) {
+      if (timers[bossId]) {
+        clearInterval(timers[bossId]);
+        delete timers[bossId];
+      }
+      document.getElementById(`${bossId}-time`).textContent = "00:00:00";
+      document.getElementById(`${bossId}-alert`).innerHTML = '';
+      document.getElementById(`${bossId}-title`).innerHTML = document.getElementById(`${bossId}-title`).textContent.replace(/⏳|❗/g, '').trim();
+    }
+  </script>
+</body>
+</html>
