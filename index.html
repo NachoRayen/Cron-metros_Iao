@@ -4,167 +4,186 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cronómetro de Bosses - Imperium AO</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 2rem;
       font-family: 'MedievalSharp', cursive;
-      background-color: #0a0f1a;
+      background: #0a0f1a url('https://i.imgur.com/q35ZzqX.png') no-repeat center center fixed;
+      background-size: 600px;
       color: #d0e7ff;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      transition: background-color 0.5s, color 0.5s;
-    }
-
-    /* Tema claro */
-    body.light {
-      background-color: #fdf6e3;
-      color: #5a4631;
     }
 
     h1 {
       font-size: 2.5rem;
       color: gold;
       text-shadow: 0 0 10px #000;
-      margin-bottom: 1rem;
       user-select: none;
     }
 
-    /* Tema claro para título */
-    body.light h1 {
-      color: #b8860b;
-      text-shadow: 0 0 8px #a67c00;
-    }
-
-    /* Panel herramientas */
-    #tools {
-      background: rgba(20, 40, 70, 0.85);
+    /* Login form mejorado */
+    #login-form {
+      background: rgba(10, 20, 40, 0.9);
       border: 2px solid gold;
       border-radius: 15px;
-      padding: 1rem 1.5rem;
-      width: 700px;
-      max-width: 90vw;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      justify-content: center;
-      align-items: center;
+      padding: 2rem 3rem;
       box-shadow: 0 0 20px gold;
-      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+      gap: 1rem;
+      margin-top: 2rem;
       user-select: none;
-      font-size: 0.9rem;
     }
 
-    /* Tema claro panel */
-    body.light #tools {
-      background: rgba(250, 240, 220, 0.95);
-      border-color: #b8860b;
-      box-shadow: 0 0 15px #a67c00;
-      color: #5a4631;
-    }
-
-    #tools input[type="text"] {
-      padding: 0.5rem 0.8rem;
-      border-radius: 8px;
-      border: 2px solid #87cefa;
+    #login-form input {
+      width: 100%;
+      padding: 0.8rem 1rem;
       font-family: 'MedievalSharp', cursive;
-      font-size: 1rem;
-      width: 180px;
-      transition: border-color 0.3s;
-      background-color: #011229;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 2px solid gold;
+      background: #011229;
       color: #d0e7ff;
+      transition: background 0.3s, border-color 0.3s;
+      outline-offset: 2px;
     }
 
-    body.light #tools input[type="text"] {
-      border-color: #b8860b;
-      background-color: #fdf6e3;
-      color: #5a4631;
+    #login-form input::placeholder {
+      color: #87cefa;
     }
 
-    #tools input[type="text"]:focus {
-      border-color: gold;
+    #login-form input:focus {
+      background: #02264c;
+      border-color: #ffd700;
       outline: none;
     }
 
-    #tools label {
-      margin-right: 0.5rem;
+    #login-form button {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      font-size: 1.15rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+      color: #2f1f00;
+      box-shadow: 0 0 10px #d4af37;
+      transition: background 0.4s, transform 0.1s;
+    }
+
+    #login-form button:hover {
+      background: linear-gradient(45deg, #ffd700, #b8860b);
+      transform: scale(1.05);
+    }
+
+    .message {
+      color: #ffae00;
+      font-weight: bold;
+      min-height: 1.2em;
+      text-align: center;
+      user-select: none;
+    }
+
+    #not-authorized {
+      margin-top: 2rem;
+      color: #ffae00;
       font-weight: bold;
       user-select: none;
+      text-align: center;
     }
 
-    #tools select {
+    #logout {
+      margin-top: 1rem;
+      background: darkred;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
       font-family: 'MedievalSharp', cursive;
-      padding: 0.4rem 0.6rem;
+      font-weight: bold;
       border-radius: 8px;
-      border: 2px solid #87cefa;
-      font-size: 1rem;
-      background-color: #011229;
-      color: #d0e7ff;
       cursor: pointer;
-      transition: border-color 0.3s;
+      box-shadow: 0 0 8px #660000;
+      transition: background 0.3s;
+    }
+
+    #logout:hover {
+      background: #a00000;
+    }
+
+    /* Panel de herramientas (filtros y botones) */
+    #tools {
+      display: none; /* oculto por defecto */
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
       user-select: none;
     }
 
-    body.light #tools select {
-      border-color: #b8860b;
-      background-color: #fdf6e3;
-      color: #5a4631;
+    #tools input[type="text"], #tools select {
+      font-family: 'MedievalSharp', cursive;
+      padding: 0.5rem 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid gold;
+      background: #011229;
+      color: #d0e7ff;
+      min-width: 180px;
+      transition: background 0.3s, border-color 0.3s;
     }
 
-    #tools select:hover, #tools select:focus {
-      border-color: gold;
+    #tools input[type="text"]::placeholder {
+      color: #87cefa;
+    }
+
+    #tools input[type="text"]:focus, #tools select:focus {
+      background: #02264c;
+      border-color: #ffd700;
       outline: none;
     }
 
     #tools button {
-      padding: 0.5rem 1rem;
-      background: linear-gradient(45deg, #003366, #0055aa);
-      border: none;
-      border-radius: 10px;
-      color: #d0e7ff;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 10px #87cefa;
-      transition: background 0.4s, transform 0.1s;
       font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+      color: #2f1f00;
+      box-shadow: 0 0 8px #d4af37;
+      transition: background 0.3s, transform 0.1s;
       user-select: none;
-      min-width: 130px;
     }
 
     #tools button:hover {
-      background: linear-gradient(45deg, #0055aa, #003366);
+      background: linear-gradient(45deg, #ffd700, #b8860b);
       transform: scale(1.05);
     }
 
-    body.light #tools button {
-      background: linear-gradient(45deg, #b8860b, #a67c00);
-      box-shadow: 0 0 10px #a67c00;
-      color: #5a4631;
-    }
-
-    body.light #tools button:hover {
-      background: linear-gradient(45deg, #a67c00, #b8860b);
-    }
-
-    #last-update {
-      margin-left: auto;
-      font-size: 0.85rem;
-      user-select: none;
-    }
-
-    /* Resto de estilos igual que antes para timers, login, etc. */
-
+    /* Timers */
     .timer-container {
-      display: none;
+      display: none; /* oculto por defecto, se muestra al login */
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
       margin-top: 2rem;
-      width: 90vw;
+      width: 100%;
       max-width: 900px;
+      user-select: none;
     }
 
     .timer {
@@ -175,34 +194,22 @@
       width: 250px;
       text-align: center;
       box-shadow: 0 0 15px #000;
-      user-select: none;
-      transition: background-color 0.5s, color 0.5s;
-    }
-
-    body.light .timer {
-      background: rgba(250, 240, 220, 0.9);
-      border-color: #b8860b;
-      color: #5a4631;
-      box-shadow: 0 0 12px #a67c00;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .timer h2 {
       margin-bottom: 0.3rem;
       color: #87cefa;
-    }
-
-    body.light .timer h2 {
-      color: #b8860b;
+      user-select: text;
     }
 
     .respawn-time {
       font-size: 0.95rem;
       color: #ccc;
       margin-bottom: 0.5rem;
-    }
-
-    body.light .respawn-time {
-      color: #7a6341;
+      user-select: text;
     }
 
     .controls button {
@@ -216,21 +223,12 @@
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
       transition: background 0.3s, transform 0.1s;
+      user-select: none;
     }
 
     .controls button:hover {
       background: #0055aa;
       transform: scale(1.05);
-    }
-
-    body.light .controls button {
-      background: #a67c00;
-      color: #5a4631;
-      border-color: #b8860b;
-    }
-
-    body.light .controls button:hover {
-      background: #b8860b;
     }
 
     .warning {
@@ -247,56 +245,146 @@
       user-select: none;
     }
 
-    /* Pantalla de carga y login: igual que antes, omitted here for brevity */
-
-    /* Animación llama parpadeante */
-    @keyframes flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        opacity: 1;
-      }
-      20%, 22%, 24%, 55% {
-        opacity: 0.5;
-      }
-    }
-
-    .torch {
-      font-size: 3rem;
-      animation: flicker 1.5s infinite;
+    /* Loader pantalla completa */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 20, 40, 0.95);
+      color: #d0e7ff;
+      font-family: 'MedievalSharp', cursive;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
       user-select: none;
     }
+
+    #loading-screen h2 {
+      font-size: 2rem;
+      color: gold;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #loading-screen p {
+      font-size: 1.2rem;
+      color: #87cefa;
+    }
+
+    /* Antorcha parpadeante */
+    .torch {
+      animation: flicker 1.5s infinite;
+      font-size: 2.5rem;
+      user-select: none;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Tema claro para herramientas y timers */
+    body.light {
+      background: #f5f5dc url('https://i.imgur.com/q35ZzqX.png') no-repeat center center fixed;
+      background-size: 600px;
+      color: #555;
+    }
+
+    body.light #login-form {
+      background: rgba(245, 245, 220, 0.9);
+      border-color: #b8860b;
+      color: #4b3b00;
+      box-shadow: 0 0 20px #b8860b;
+    }
+
+    body.light #login-form input {
+      background: #f0e68c;
+      border-color: #b8860b;
+      color: #4b3b00;
+    }
+
+    body.light #login-form input:focus {
+      background: #fffacd;
+      border-color: #ffd700;
+    }
+
+    body.light #login-form button {
+      background: linear-gradient(45deg, #ffd700, #b8860b);
+      color: #4b3b00;
+      box-shadow: 0 0 10px #d4af37;
+    }
+
+    body.light #login-form button:hover {
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+    }
+
+    body.light #tools input[type="text"], 
+    body.light #tools select {
+      background: #fffacd;
+      border-color: #b8860b;
+      color: #4b3b00;
+    }
+
+    body.light #tools input[type="text"]:focus, 
+    body.light #tools select:focus {
+      background: #fff;
+      border-color: #ffd700;
+    }
+
+    body.light #tools button {
+      background: linear-gradient(45deg, #ffd700, #b8860b);
+      color: #4b3b00;
+      box-shadow: 0 0 8px #d4af37;
+    }
+
+    body.light #tools button:hover {
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+    }
+
+    body.light .timer {
+      background: rgba(245, 245, 220, 0.85);
+      border-color: #b8860b;
+      color: #4b3b00;
+      box-shadow: 0 0 15px #aaa;
+    }
+
+    body.light .timer h2 {
+      color: #6a5d1b;
+    }
+
+    body.light .respawn-time {
+      color: #666;
+    }
+
+    body.light .controls button {
+      background: #b8860b;
+      color: #4b3b00;
+      border-color: #6a5d1b;
+    }
+
+    body.light .controls button:hover {
+      background: #d4af37;
+    }
+
+    body.light .warning {
+      color: #b8860b;
+    }
+
+    body.light #not-authorized {
+      color: #b8860b;
+    }
+
   </style>
 </head>
 <body>
   <h1>Cronómetro de Bosses - Imperium AO</h1>
 
-  <div id="tools">
-    <label for="filter-input">Buscar boss:</label>
-    <input type="text" id="filter-input" placeholder="Filtrar por nombre" />
-
-    <label for="sort-select">Ordenar por:</label>
-    <select id="sort-select" title="Ordenar bosses">
-      <option value="name-asc" selected>Nombre A-Z</option>
-      <option value="name-desc">Nombre Z-A</option>
-      <option value="min-asc">Respawn mínimo ↑</option>
-      <option value="min-desc">Respawn mínimo ↓</option>
-    </select>
-
-    <button id="toggle-respawn-btn" title="Mostrar u ocultar tiempo de respawn">Mostrar respawn</button>
-    <button id="pause-all-btn" title="Pausar / Continuar todos los timers">Pausar timers</button>
-    <button id="reset-all-btn" title="Resetear todos los timers">Resetear todo</button>
-    <button id="sync-btn" title="Sincronizar datos manualmente">Sincronizar</button>
-    <button id="theme-btn" title="Cambiar tema oscuro/claro">Tema claro</button>
-
-    <div id="last-update" title="Última actualización de datos">Última actualización: --:--:--</div>
-  </div>
-
-  <!-- Login, loading, not authorized, logout y timers container igual que antes -->
-
   <div id="loading-screen" style="display:none;">
-    <div class="loading-content">
-      <h2><span class="torch">🔥</span> Cargando... </h2>
-      <p>Validando tu acceso al Imperio</p>
-    </div>
+    <h2><span class="torch">🔥</span> Cargando... </h2>
+    <p>Validando tu acceso al Imperio</p>
   </div>
 
   <div id="login-form">
@@ -312,6 +400,24 @@
   </div>
 
   <button id="logout" style="display: none;" onclick="logout()">Cerrar sesión</button>
+
+  <div id="tools">
+    <input type="text" id="filter-input" placeholder="Buscar boss..." />
+    <select id="sort-select" title="Ordenar bosses">
+      <option value="name-asc">Ordenar por nombre ↑</option>
+      <option value="name-desc">Ordenar por nombre ↓</option>
+      <option value="min-asc">Respawn mínimo ↑</option>
+      <option value="min-desc">Respawn mínimo ↓</option>
+      <option value="max-asc">Respawn máximo ↑</option>
+      <option value="max-desc">Respawn máximo ↓</option>
+    </select>
+    <button id="toggle-respawn-btn">Ocultar respawn</button>
+    <button id="pause-all-btn">Pausar timers</button>
+    <button id="reset-all-btn">Resetear todos</button>
+    <button id="sync-btn">Sincronizar</button>
+    <button id="theme-btn">Tema claro</button>
+    <div id="last-update" style="margin-left: auto; font-size: 0.9rem; color: #ffd700; user-select:none;"></div>
+  </div>
 
   <div class="timer-container" id="timers"></div>
 
@@ -339,8 +445,7 @@
     const notAuthorizedDiv = document.getElementById("not-authorized");
     const messageDiv = document.getElementById("message");
     const logoutButton = document.getElementById("logout");
-    const loadingScreen = document.getElementById("loading-screen");
-
+    const toolsPanel = document.getElementById("tools");
     const filterInput = document.getElementById("filter-input");
     const sortSelect = document.getElementById("sort-select");
     const toggleRespawnBtn = document.getElementById("toggle-respawn-btn");
@@ -349,12 +454,9 @@
     const syncBtn = document.getElementById("sync-btn");
     const themeBtn = document.getElementById("theme-btn");
     const lastUpdateDiv = document.getElementById("last-update");
+    const loadingScreen = document.getElementById("loading-screen");
 
-    let timers = {};
-    let paused = false;
-    let respawnVisible = true;
-    let currentSort = 'name-asc';
-    let bossesData = [
+    const bossesData = [
       { name: "Rey Dragón", min: 1320, max: 1800 },
       { name: "Dragón Legendario", min: 960, max: 1440 },
       { name: "Gran Dragón Negro", min: 720, max: 1200 },
@@ -371,34 +473,43 @@
       { name: "Gorgona", min: 60, max: 120 }
     ];
 
-    // Funciones auxiliares
+    let timers = {};
+    let paused = false;
+    let respawnVisible = true;
+    let currentSort = "name-asc";
+
     function pad(n) {
       return String(n).padStart(2, "0");
     }
+
     function minutesToMs(min) {
       return min * 60 * 1000;
     }
+
     function formatRespawn(min, max) {
       const fmt = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${m % 60 ? ` ${m % 60}m` : ''}`;
       return `Respawn: ${fmt(min)} a ${fmt(max)}`;
     }
-    function formatDate(date) {
-      return date.toLocaleTimeString();
-    }
 
-    // Renderizar timers aplicando filtro y orden
+    // Renderizo timers con filtro y orden
     function renderTimers() {
       timersContainer.innerHTML = "";
-      let filtered = bossesData.filter(boss => boss.name.toLowerCase().includes(filterInput.value.toLowerCase()));
+      let filteredBosses = bossesData.filter(b => b.name.toLowerCase().includes(filterInput.value.toLowerCase()));
 
-      switch(currentSort) {
-        case "name-asc": filtered.sort((a,b) => a.name.localeCompare(b.name)); break;
-        case "name-desc": filtered.sort((a,b) => b.name.localeCompare(a.name)); break;
-        case "min-asc": filtered.sort((a,b) => a.min - b.min); break;
-        case "min-desc": filtered.sort((a,b) => b.min - a.min); break;
-      }
+      // ordeno
+      filteredBosses.sort((a, b) => {
+        switch(currentSort) {
+          case "name-asc": return a.name.localeCompare(b.name);
+          case "name-desc": return b.name.localeCompare(a.name);
+          case "min-asc": return a.min - b.min;
+          case "min-desc": return b.min - a.min;
+          case "max-asc": return a.max - b.max;
+          case "max-desc": return b.max - a.max;
+          default: return 0;
+        }
+      });
 
-      filtered.forEach(boss => {
+      filteredBosses.forEach(boss => {
         const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
@@ -415,26 +526,14 @@
         `;
         timersContainer.appendChild(timerDiv);
 
-        // Mostrar/ocultar respawn
-        document.getElementById(`respawn-${bossKey}`).style.display = respawnVisible ? "block" : "none";
-
-        // Escuchar datos Firebase
-        const ref = database.ref("bosses/" + bossKey + "/deathTime");
-        ref.on("value", snapshot => {
-          const deathTime = snapshot.val();
-          if (deathTime) startTimer(boss.name, deathTime);
-          else resetTimer(boss.name);
-          updateLastUpdate(new Date());
-        });
+        if (!respawnVisible) {
+          document.getElementById(`respawn-${bossKey}`).style.display = "none";
+        }
       });
-      timersContainer.style.display = filtered.length ? "flex" : "none";
     }
 
-    // Temporizadores
     function startTimer(bossName, deathTimestamp) {
       if (timers[bossName]) clearInterval(timers[bossName]);
-      if(paused) return;
-
       const boss = bossesData.find(b => b.name === bossName);
       const deathTime = new Date(deathTimestamp).getTime();
       const minMs = minutesToMs(boss.min);
@@ -444,7 +543,7 @@
       const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
 
       timers[bossName] = setInterval(() => {
-        if(paused) return;
+        if (paused) return;
         const now = Date.now();
         const diff = now - deathTime;
         display.textContent = `${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))}`;
@@ -474,95 +573,75 @@
       delete timers[bossName];
       const display = document.getElementById(`${bossName}-time`);
       if(display) display.textContent = "00:00:00";
-      const iconSpan = document.getElementById(`icon-${bossKey}`);
-      if(iconSpan) iconSpan.textContent = "";
-      const warningDiv = document.getElementById(`warning-${bossKey}`);
-      if(warningDiv) warningDiv.textContent = "";
+      const icon = document.getElementById(`icon-${bossKey}`);
+      if(icon) icon.textContent = "";
+      const warning = document.getElementById(`warning-${bossKey}`);
+      if(warning) warning.textContent = "";
       database.ref("bosses/" + bossKey).remove();
     }
 
-    // Herramientas
+    function pauseAllTimers() {
+      paused = !paused;
+      pauseAllBtn.textContent = paused ? "Reanudar timers" : "Pausar timers";
+    }
 
-    filterInput.addEventListener("input", () => {
-      renderTimers();
-    });
+    function resetAllTimers() {
+      bossesData.forEach(b => resetTimer(b.name));
+    }
 
-    sortSelect.addEventListener("change", () => {
-      currentSort = sortSelect.value;
-      renderTimers();
-    });
-
-    toggleRespawnBtn.addEventListener("click", () => {
+    function toggleRespawnVisibility() {
       respawnVisible = !respawnVisible;
       toggleRespawnBtn.textContent = respawnVisible ? "Ocultar respawn" : "Mostrar respawn";
-      // Mostrar u ocultar respawn en cada timer
-      bossesData.forEach(boss => {
-        const el = document.getElementById(`respawn-${boss.name.replace(/\s+/g, "-")}`);
+      bossesData.forEach(b => {
+        const el = document.getElementById(`respawn-${b.name.replace(/\s+/g, "-")}`);
         if(el) el.style.display = respawnVisible ? "block" : "none";
       });
-    });
+    }
 
-    pauseAllBtn.addEventListener("click", () => {
-      paused = !paused;
-      pauseAllBtn.textContent = paused ? "Continuar timers" : "Pausar timers";
-    });
+    async function loadTimersFromFirebase() {
+      const bossesRef = database.ref("bosses");
+      bossesRef.off(); // Desconectar previos listeners para evitar duplicados
+      bossesRef.on("value", snapshot => {
+        const data = snapshot.val() || {};
+        Object.keys(timers).forEach(boss => {
+          clearInterval(timers[boss]);
+          delete timers[boss];
+        });
+        renderTimers();
+        Object.entries(data).forEach(([bossKey, val]) => {
+          if (val && val.deathTime) {
+            const name = bossKey.replace(/-/g, " ");
+            const boss = bossesData.find(b => b.name.toLowerCase() === name.toLowerCase());
+            if(boss) startTimer(boss.name, val.deathTime);
+          }
+        });
+        updateLastSyncTime();
+      });
+    }
 
-    resetAllBtn.addEventListener("click", () => {
-      if(confirm("¿Seguro que querés resetear todos los timers?")) {
-        bossesData.forEach(boss => resetTimer(boss.name));
-      }
-    });
+    function updateLastSyncTime() {
+      const now = new Date();
+      const h = pad(now.getHours());
+      const m = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+      lastUpdateDiv.textContent = `Última sincronización: ${h}:${m}:${s}`;
+    }
 
-    syncBtn.addEventListener("click", () => {
-      // Reforzar sincronización haciendo reload de timers
-      loadTimersFromFirebase();
-    });
+    async function syncTimers() {
+      // Para forzar refresco desde Firebase
+      await loadTimersFromFirebase();
+      updateLastSyncTime();
+    }
 
-    themeBtn.addEventListener("click", () => {
-      if(document.body.classList.contains("light")) {
-        document.body.classList.remove("light");
+    function changeTheme() {
+      const body = document.body;
+      if(body.classList.contains("light")){
+        body.classList.remove("light");
         themeBtn.textContent = "Tema claro";
       } else {
-        document.body.classList.add("light");
+        body.classList.add("light");
         themeBtn.textContent = "Tema oscuro";
       }
-    });
-
-    function updateLastUpdate(date) {
-      lastUpdateDiv.textContent = `Última actualización: ${formatDate(date)}`;
-    }
-
-    // Carga inicial y actualización de timers
-
-    function loadTimersFromFirebase() {
-      bossesData.forEach(boss => {
-        const bossKey = boss.name.replace(/\s+/g, "-");
-        const ref = database.ref("bosses/" + bossKey + "/deathTime");
-        ref.once("value").then(snapshot => {
-          const deathTime = snapshot.val();
-          if(deathTime) startTimer(boss.name, deathTime);
-          else resetTimer(boss.name);
-        });
-      });
-      updateLastUpdate(new Date());
-    }
-
-    // Firebase auth y autorización
-
-    function login() {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, pass).catch(e => showMessage(e.message));
-    }
-
-    function register() {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, pass).catch(e => showMessage(e.message));
-    }
-
-    function logout() {
-      auth.signOut();
     }
 
     function showMessage(msg) {
@@ -580,15 +659,46 @@
 
     function showLoading() {
       loadingScreen.style.display = "flex";
-      loginForm.style.display = "none";
-      notAuthorizedDiv.style.display = "none";
-      timersContainer.style.display = "none";
-      logoutButton.style.display = "none";
-      clearMessage();
     }
 
     function hideLoading() {
       loadingScreen.style.display = "none";
+    }
+
+    function login() {
+      clearMessage();
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value;
+      if (!email || !pass) {
+        showMessage("Email y contraseña son obligatorios");
+        return;
+      }
+      showLoading();
+      auth.signInWithEmailAndPassword(email, pass)
+        .catch(e => {
+          hideLoading();
+          showMessage(e.message);
+        });
+    }
+
+    function register() {
+      clearMessage();
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value;
+      if (!email || !pass) {
+        showMessage("Email y contraseña son obligatorios");
+        return;
+      }
+      showLoading();
+      auth.createUserWithEmailAndPassword(email, pass)
+        .catch(e => {
+          hideLoading();
+          showMessage(e.message);
+        });
+    }
+
+    function logout() {
+      auth.signOut();
     }
 
     auth.onAuthStateChanged(async user => {
@@ -599,25 +709,49 @@
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "none";
           logoutButton.style.display = "block";
+          toolsPanel.style.display = "flex";
+          timersContainer.style.display = "flex";
+
           renderTimers();
           loadTimersFromFirebase();
         } else {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "block";
-          timersContainer.style.display = "none";
           logoutButton.style.display = "block";
+          toolsPanel.style.display = "none";
+          timersContainer.style.display = "none";
         }
         hideLoading();
         clearMessage();
       } else {
         hideLoading();
-        loginForm.style.display = "block";
+        loginForm.style.display = "flex";
         notAuthorizedDiv.style.display = "none";
-        timersContainer.style.display = "none";
         logoutButton.style.display = "none";
+        toolsPanel.style.display = "none";
+        timersContainer.style.display = "none";
         clearMessage();
       }
     });
+
+    // Eventos UI herramientas
+    filterInput.addEventListener("input", () => {
+      renderTimers();
+      // Reiniciar timers para boss visibles
+      loadTimersFromFirebase();
+    });
+
+    sortSelect.addEventListener("change", () => {
+      currentSort = sortSelect.value;
+      renderTimers();
+      loadTimersFromFirebase();
+    });
+
+    toggleRespawnBtn.addEventListener("click", toggleRespawnVisibility);
+    pauseAllBtn.addEventListener("click", pauseAllTimers);
+    resetAllBtn.addEventListener("click", resetAllTimers);
+    syncBtn.addEventListener("click", syncTimers);
+    themeBtn.addEventListener("click", changeTheme);
   </script>
 </body>
 </html>
