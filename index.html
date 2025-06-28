@@ -10,8 +10,7 @@
       margin: 0;
       padding: 2rem;
       font-family: 'MedievalSharp', cursive;
-      background: #0a0f1a url('https://i.imgur.com/q35ZzqX.png') no-repeat center center fixed;
-      background-size: 600px;
+      background: #0a2a6e; /* Azul sólido sin imagen */
       color: #d0e7ff;
       display: flex;
       flex-direction: column;
@@ -286,97 +285,6 @@
       50% { opacity: 0.6; }
     }
 
-    /* Tema claro para herramientas y timers */
-    body.light {
-      background: #f5f5dc url('https://i.imgur.com/q35ZzqX.png') no-repeat center center fixed;
-      background-size: 600px;
-      color: #555;
-    }
-
-    body.light #login-form {
-      background: rgba(245, 245, 220, 0.9);
-      border-color: #b8860b;
-      color: #4b3b00;
-      box-shadow: 0 0 20px #b8860b;
-    }
-
-    body.light #login-form input {
-      background: #f0e68c;
-      border-color: #b8860b;
-      color: #4b3b00;
-    }
-
-    body.light #login-form input:focus {
-      background: #fffacd;
-      border-color: #ffd700;
-    }
-
-    body.light #login-form button {
-      background: linear-gradient(45deg, #ffd700, #b8860b);
-      color: #4b3b00;
-      box-shadow: 0 0 10px #d4af37;
-    }
-
-    body.light #login-form button:hover {
-      background: linear-gradient(45deg, #b8860b, #ffd700);
-    }
-
-    body.light #tools input[type="text"], 
-    body.light #tools select {
-      background: #fffacd;
-      border-color: #b8860b;
-      color: #4b3b00;
-    }
-
-    body.light #tools input[type="text"]:focus, 
-    body.light #tools select:focus {
-      background: #fff;
-      border-color: #ffd700;
-    }
-
-    body.light #tools button {
-      background: linear-gradient(45deg, #ffd700, #b8860b);
-      color: #4b3b00;
-      box-shadow: 0 0 8px #d4af37;
-    }
-
-    body.light #tools button:hover {
-      background: linear-gradient(45deg, #b8860b, #ffd700);
-    }
-
-    body.light .timer {
-      background: rgba(245, 245, 220, 0.85);
-      border-color: #b8860b;
-      color: #4b3b00;
-      box-shadow: 0 0 15px #aaa;
-    }
-
-    body.light .timer h2 {
-      color: #6a5d1b;
-    }
-
-    body.light .respawn-time {
-      color: #666;
-    }
-
-    body.light .controls button {
-      background: #b8860b;
-      color: #4b3b00;
-      border-color: #6a5d1b;
-    }
-
-    body.light .controls button:hover {
-      background: #d4af37;
-    }
-
-    body.light .warning {
-      color: #b8860b;
-    }
-
-    body.light #not-authorized {
-      color: #b8860b;
-    }
-
   </style>
 </head>
 <body>
@@ -412,8 +320,6 @@
       <option value="max-desc">Respawn máximo ↓</option>
     </select>
     <button id="toggle-respawn-btn">Ocultar respawn</button>
-    <button id="pause-all-btn">Pausar timers</button>
-    <button id="reset-all-btn">Resetear todos</button>
     <button id="sync-btn">Sincronizar</button>
     <button id="theme-btn">Tema claro</button>
     <div id="last-update" style="margin-left: auto; font-size: 0.9rem; color: #ffd700; user-select:none;"></div>
@@ -449,8 +355,6 @@
     const filterInput = document.getElementById("filter-input");
     const sortSelect = document.getElementById("sort-select");
     const toggleRespawnBtn = document.getElementById("toggle-respawn-btn");
-    const pauseAllBtn = document.getElementById("pause-all-btn");
-    const resetAllBtn = document.getElementById("reset-all-btn");
     const syncBtn = document.getElementById("sync-btn");
     const themeBtn = document.getElementById("theme-btn");
     const lastUpdateDiv = document.getElementById("last-update");
@@ -474,7 +378,6 @@
     ];
 
     let timers = {};
-    let paused = false;
     let respawnVisible = true;
     let currentSort = "name-asc";
 
@@ -543,7 +446,6 @@
       const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
 
       timers[bossName] = setInterval(() => {
-        if (paused) return;
         const now = Date.now();
         const diff = now - deathTime;
         display.textContent = `${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))}`;
@@ -580,14 +482,7 @@
       database.ref("bosses/" + bossKey).remove();
     }
 
-    function pauseAllTimers() {
-      paused = !paused;
-      pauseAllBtn.textContent = paused ? "Reanudar timers" : "Pausar timers";
-    }
-
-    function resetAllTimers() {
-      bossesData.forEach(b => resetTimer(b.name));
-    }
+    // Funciones removidas: pauseAllTimers, resetAllTimers
 
     function toggleRespawnVisibility() {
       respawnVisible = !respawnVisible;
@@ -600,7 +495,7 @@
 
     async function loadTimersFromFirebase() {
       const bossesRef = database.ref("bosses");
-      bossesRef.off(); // Desconectar previos listeners para evitar duplicados
+      bossesRef.off();
       bossesRef.on("value", snapshot => {
         const data = snapshot.val() || {};
         Object.keys(timers).forEach(boss => {
@@ -628,7 +523,6 @@
     }
 
     async function syncTimers() {
-      // Para forzar refresco desde Firebase
       await loadTimersFromFirebase();
       updateLastSyncTime();
     }
@@ -734,10 +628,8 @@
       }
     });
 
-    // Eventos UI herramientas
     filterInput.addEventListener("input", () => {
       renderTimers();
-      // Reiniciar timers para boss visibles
       loadTimersFromFirebase();
     });
 
@@ -748,8 +640,6 @@
     });
 
     toggleRespawnBtn.addEventListener("click", toggleRespawnVisibility);
-    pauseAllBtn.addEventListener("click", pauseAllTimers);
-    resetAllBtn.addEventListener("click", resetAllTimers);
     syncBtn.addEventListener("click", syncTimers);
     themeBtn.addEventListener("click", changeTheme);
   </script>
