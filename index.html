@@ -556,7 +556,6 @@ const bosses = [
 ];
 
 
-
     let timers = {};
     let spawnSounded = {};
     let spawnedSounded = {};
@@ -570,8 +569,8 @@ const bosses = [
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
       const s = Math.floor(seconds % 60);
-      if (h > 0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
-      return `${pad(m)}:${pad(s)}`;
+      if (h > 0) return ${pad(h)}:${pad(m)}:${pad(s)};
+      return ${pad(m)}:${pad(s)};
     }
 
     function formatRespawn(min, max) {
@@ -579,9 +578,9 @@ const bosses = [
       if (min >= 60) {
         const minH = (min / 60).toFixed(1).replace(/\.0$/, "");
         const maxH = (max / 60).toFixed(1).replace(/\.0$/, "");
-        return `${minH}h a ${maxH}h`;
+        return ${minH}h a ${maxH}h;
       }
-      return `${min} min a ${max} min`;
+      return ${min} min a ${max} min;
     }
 
     // Crear timer HTML para cada boss con input type time y botón "Murió recién"
@@ -589,9 +588,9 @@ const bosses = [
       const bossKey = boss.name.replace(/\s+/g, "-");
       const container = document.createElement("div");
       container.className = "timer";
-      container.id = `timer-${bossKey}`;
+      container.id = timer-${bossKey};
 
-      container.innerHTML = `
+      container.innerHTML = 
         <h2>${boss.name} <span class="icon" id="icon-${bossKey}"></span></h2>
         <div class="respawn-time">${formatRespawn(boss.min, boss.max)}</div>
         <div class="timer-time" id="${boss.name}-time">00:00</div>
@@ -603,7 +602,7 @@ const bosses = [
           <button onclick="resetTimer('${boss.name}')">Reset</button>
         </div>
         <div class="warning" id="warning-${bossKey}"></div>
-      `;
+      ;
 
       return container;
     }
@@ -629,7 +628,7 @@ const bosses = [
     // Actualizar el valor del input time basado en timestamp guardado
     function updateInputTime(bossName, date) {
       const bossKey = bossName.replace(/\s+/g, "-");
-      const input = document.getElementById(`input-${bossKey}`);
+      const input = document.getElementById(input-${bossKey});
       if (!input) return;
       if (!date) {
         input.value = "";
@@ -637,18 +636,18 @@ const bosses = [
       }
       const h = pad(date.getHours());
       const m = pad(date.getMinutes());
-      input.value = `${h}:${m}`;
+      input.value = ${h}:${m};
     }
 
     // Actualizar el timer y estado visual de cada boss
     function updateTimer(boss) {
       const bossKey = boss.name.replace(/\s+/g, "-");
-      const timerDiv = document.getElementById(`timer-${bossKey}`);
+      const timerDiv = document.getElementById(timer-${bossKey});
       if (!timerDiv) return;
 
-      const timeDisplay = document.getElementById(`${boss.name}-time`);
-      const icon = document.getElementById(`icon-${bossKey}`);
-      const warning = document.getElementById(`warning-${bossKey}`);
+      const timeDisplay = document.getElementById(${boss.name}-time);
+      const icon = document.getElementById(icon-${bossKey});
+      const warning = document.getElementById(warning-${bossKey});
 
       const deathTimestamp = timers[boss.name] || null;
 
@@ -692,7 +691,7 @@ const bosses = [
       } else if (elapsedSec >= minSec && elapsedSec <= maxSec) {
         // Dentro ventana spawn
         const timeLeft = Math.floor(maxSec - elapsedSec);
-        timeDisplay.textContent = `Ventana: ${formatTime(timeLeft)}`;
+        timeDisplay.textContent = Ventana: ${formatTime(timeLeft)};
         timerDiv.classList.add("spawning");
         timerDiv.classList.remove("spawned");
         icon.textContent = "⏳";
@@ -740,7 +739,7 @@ const bosses = [
 
     // Resetear timer de un boss
     function resetTimer(bossName) {
-      if (confirm(`¿Resetear timer de ${bossName}?`)) {
+      if (confirm(¿Resetear timer de ${bossName}?)) {
         delete timers[bossName];
         saveTimers();
         const boss = bosses.find(b => b.name === bossName);
@@ -753,7 +752,7 @@ const bosses = [
       const filter = searchInput.value.toLowerCase();
       bosses.forEach(boss => {
         const bossKey = boss.name.replace(/\s+/g, "-");
-        const el = document.getElementById(`timer-${bossKey}`);
+        const el = document.getElementById(timer-${bossKey});
         if (!el) return;
         el.style.display = boss.name.toLowerCase().includes(filter) ? "flex" : "none";
       });
@@ -783,8 +782,8 @@ const bosses = [
         timersContainer.appendChild(el);
 
         const bossKey = boss.name.replace(/\s+/g, "-");
-        const input = document.getElementById(`input-${bossKey}`);
-        const btnMurio = document.getElementById(`btn-murio-${bossKey}`);
+        const input = document.getElementById(input-${bossKey});
+        const btnMurio = document.getElementById(btn-murio-${bossKey});
 
         // Cuando cambia el input time
         input.addEventListener("change", e => {
@@ -915,6 +914,11 @@ const bosses = [
         spawnedSounded = {};
       }
     });
+
+    // Actualizar timers cada segundo
+    setInterval(() => {
+      bosses.forEach(updateTimer);
+    }, 1000);
 
     // Sonidos
     const soundSpawn = document.getElementById("soundSpawn");
