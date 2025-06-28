@@ -478,8 +478,8 @@
     }
 
     function formatRespawn(min, max) {
-      const fmt = m => m < 60 ? ${m} min : ${Math.floor(m / 60)}h${m % 60 ?  ${m % 60}m : ''};
-      return Respawn: ${fmt(min)} a ${fmt(max)};
+      const fmt = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${m % 60 ? ` ${m % 60}m` : ''}`;
+      return `Respawn: ${fmt(min)} a ${fmt(max)}`;
     }
 
     // Muestra timers filtrados según búsqueda
@@ -490,9 +490,9 @@
         const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
-        timerDiv.id = timer-${bossKey};
+        timerDiv.id = `timer-${bossKey}`;
 
-        timerDiv.innerHTML = 
+        timerDiv.innerHTML = `
           <h2>${boss.name} <span class="icon" id="icon-${bossKey}"></span></h2>
           <div class="respawn-time">${formatRespawn(boss.min, boss.max)}</div>
           <div id="${boss.name}-time" class="timer-time">00:00:00</div>
@@ -504,12 +504,12 @@
             <button onclick="resetTimerConfirm('${boss.name}')">Reset</button>
           </div>
           <div id="warning-${bossKey}" class="warning"></div>
-        ;
+        `;
 
         timersContainer.appendChild(timerDiv);
 
         // Evento para input hora muerte
-        const timeInput = document.getElementById(time-input-${bossKey});
+        const timeInput = document.getElementById(`time-input-${bossKey}`);
         timeInput.addEventListener("keydown", e => {
           if (e.key === "Enter") {
             const val = timeInput.value;
@@ -536,9 +536,9 @@
       const deathTime = new Date(deathTimestamp).getTime();
       const minMs = minutesToMs(boss.min);
       const maxMs = minutesToMs(boss.max);
-      const display = document.getElementById(${bossName}-time);
-      const iconSpan = document.getElementById(icon-${bossName.replace(/\s+/g, "-")});
-      const warningDiv = document.getElementById(warning-${bossName.replace(/\s+/g, "-")});
+      const display = document.getElementById(`${bossName}-time`);
+      const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
+      const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
 
       timers[bossName] = setInterval(() => {
         const now = Date.now();
@@ -549,7 +549,7 @@
           warningDiv.textContent = "Hora futura inválida";
           return;
         }
-        display.textContent = ${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))};
+        display.textContent = `${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))}`;
 
         if (diff >= minMs && diff < maxMs) {
           iconSpan.textContent = "⏳";
@@ -588,7 +588,7 @@
     }
 
     function resetTimerConfirm(bossName) {
-      if (confirm(¿Seguro que querés resetear el timer de "${bossName}"? Esta acción no se puede deshacer.)) {
+      if (confirm(`¿Seguro que querés resetear el timer de "${bossName}"? Esta acción no se puede deshacer.`)) {
         resetTimer(bossName);
       }
     }
@@ -597,9 +597,9 @@
       const bossKey = bossName.replace(/\s+/g, "-");
       clearInterval(timers[bossName]);
       delete timers[bossName];
-      const display = document.getElementById(${bossName}-time);
-      const iconSpan = document.getElementById(icon-${bossKey});
-      const warningDiv = document.getElementById(warning-${bossKey});
+      const display = document.getElementById(`${bossName}-time`);
+      const iconSpan = document.getElementById(`icon-${bossKey}`);
+      const warningDiv = document.getElementById(`warning-${bossKey}`);
       if(display) display.textContent = "00:00:00";
       if(iconSpan) iconSpan.textContent = "";
       if(warningDiv) warningDiv.textContent = "";
