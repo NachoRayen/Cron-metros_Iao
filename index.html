@@ -306,7 +306,7 @@
       { name: "Abyssaria", min: 210, max: 540 },
       { name: "Garveloth", min: 30, max: 45 },
       { name: "Vampiro Transformado", min: 30, max: 45 },
-      { name: "Gorgona", min: 16.6667, max: 61.0167 }
+      { name: "Gorgona", min: 60, max: 120 }
     ];
 
     // Utils
@@ -474,6 +474,8 @@
       if (timers[bossName]) clearInterval(timers[bossName]);
 
       const boss = bosses.find(b => b.name === bossName);
+      if (!boss) return;
+
       const deathTime = new Date(deathTimestamp).getTime();
       const minMs = minutesToMs(boss.min);
       const maxMs = minutesToMs(boss.max);
@@ -505,29 +507,31 @@
       }, 1000);
     }
 
-    function markDead(bossName) {
+    // Marcar boss como muerto
+    window.markDead = function(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
       const nowISO = new Date().toISOString();
       database.ref('bosses/' + bossKey).set({ deathTime: nowISO });
     }
 
-    function resetTimer(bossName) {
+    // Resetear timer
+    window.resetTimer = function(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
-      clearInterval(timers[bossName]);
-      delete timers[bossName];
-
+      if (timers[bossName]) {
+        clearInterval(timers[bossName]);
+        delete timers[bossName];
+      }
       document.getElementById(`${bossName}-time`).textContent = "00:00:00";
       document.getElementById(`icon-${bossKey}`).textContent = "";
       document.getElementById(`warning-${bossKey}`).textContent = "";
-
       database.ref('bosses/' + bossKey).remove();
     }
 
-    // On auth state change
+    // Estado auth
     auth.onAuthStateChanged(async user => {
       if (user) {
-        const authorized = await checkAuthorization(user.uid);
-        if (authorized) {
+        const isAllowed = await checkAuthorization(user.uid);
+        if (isAllowed) {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "none";
           logoutButton.style.display = "block";
@@ -538,6 +542,7 @@
           timersContainer.style.display = "none";
           logoutButton.style.display = "block";
         }
+        clearMessage();
       } else {
         loginForm.style.display = "block";
         notAuthorizedDiv.style.display = "none";
@@ -546,10 +551,6 @@
         clearMessage();
       }
     });
-
-    // Expose functions for buttons inline handlers
-    window.markDead = markDead;
-    window.resetTimer = resetTimer;
   </script>
 </body>
 </html>
