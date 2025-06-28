@@ -443,7 +443,7 @@
         timerDiv.innerHTML = `
           <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
           <div id="${boss.name}-time">00:00:00</div>
-          <div class="respawn-time">Respawn: ${Math.floor(boss.min/60)} a ${Math.ceil(boss.max/60)} minutos</div>
+          <div class="respawn-time">Respawn: ${Math.floor(boss.min/60)}h a ${Math.ceil(boss.max/60)}h</div>
           <div class="controls">
             <button onclick="markDead('${boss.name}')">Murió ahora</button>
             <button onclick="resetTimer('${boss.name}')">Reset</button>
