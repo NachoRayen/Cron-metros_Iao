@@ -4,185 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cronómetro de Bosses - Imperium AO</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
       padding: 2rem;
       font-family: 'MedievalSharp', cursive;
-      background: #0a2a6e; /* Azul sólido sin imagen */
+      /* Por defecto no hay imagen ni gif de fondo */
+      background-color: #0a2a6e; /* azul oscuro */
       color: #d0e7ff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      transition: background-color 0.5s, color 0.5s;
     }
 
     h1 {
       font-size: 2.5rem;
       color: gold;
       text-shadow: 0 0 10px #000;
-      user-select: none;
     }
 
-    /* Login form mejorado */
-    #login-form {
-      background: rgba(10, 20, 40, 0.9);
-      border: 2px solid gold;
-      border-radius: 15px;
-      padding: 2rem 3rem;
-      box-shadow: 0 0 20px gold;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 320px;
-      gap: 1rem;
-      margin-top: 2rem;
-      user-select: none;
-    }
-
-    #login-form input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      font-family: 'MedievalSharp', cursive;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      border: 2px solid gold;
-      background: #011229;
-      color: #d0e7ff;
-      transition: background 0.3s, border-color 0.3s;
-      outline-offset: 2px;
-    }
-
-    #login-form input::placeholder {
-      color: #87cefa;
-    }
-
-    #login-form input:focus {
-      background: #02264c;
-      border-color: #ffd700;
-      outline: none;
-    }
-
-    #login-form button {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      font-size: 1.15rem;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(45deg, #b8860b, #ffd700);
-      color: #2f1f00;
-      box-shadow: 0 0 10px #d4af37;
-      transition: background 0.4s, transform 0.1s;
-    }
-
-    #login-form button:hover {
-      background: linear-gradient(45deg, #ffd700, #b8860b);
-      transform: scale(1.05);
-    }
-
-    .message {
-      color: #ffae00;
-      font-weight: bold;
-      min-height: 1.2em;
-      text-align: center;
-      user-select: none;
-    }
-
-    #not-authorized {
-      margin-top: 2rem;
-      color: #ffae00;
-      font-weight: bold;
-      user-select: none;
-      text-align: center;
-    }
-
-    #logout {
-      margin-top: 1rem;
-      background: darkred;
-      color: white;
-      border: none;
-      padding: 0.5rem 1.2rem;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 0 8px #660000;
-      transition: background 0.3s;
-    }
-
-    #logout:hover {
-      background: #a00000;
-    }
-
-    /* Panel de herramientas (filtros y botones) */
-    #tools {
-      display: none; /* oculto por defecto */
-      margin-top: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      align-items: center;
-      width: 100%;
-      max-width: 900px;
-      user-select: none;
-    }
-
-    #tools input[type="text"], #tools select {
-      font-family: 'MedievalSharp', cursive;
-      padding: 0.5rem 0.8rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 2px solid gold;
-      background: #011229;
-      color: #d0e7ff;
-      min-width: 180px;
-      transition: background 0.3s, border-color 0.3s;
-    }
-
-    #tools input[type="text"]::placeholder {
-      color: #87cefa;
-    }
-
-    #tools input[type="text"]:focus, #tools select:focus {
-      background: #02264c;
-      border-color: #ffd700;
-      outline: none;
-    }
-
-    #tools button {
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(45deg, #b8860b, #ffd700);
-      color: #2f1f00;
-      box-shadow: 0 0 8px #d4af37;
-      transition: background 0.3s, transform 0.1s;
-      user-select: none;
-    }
-
-    #tools button:hover {
-      background: linear-gradient(45deg, #ffd700, #b8860b);
-      transform: scale(1.05);
-    }
-
-    /* Timers */
     .timer-container {
-      display: none; /* oculto por defecto, se muestra al login */
+      display: none;
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
       margin-top: 2rem;
-      width: 100%;
-      max-width: 900px;
-      user-select: none;
     }
 
     .timer {
@@ -193,22 +41,18 @@
       width: 250px;
       text-align: center;
       box-shadow: 0 0 15px #000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      transition: background-color 0.5s, color 0.5s, border-color 0.5s, box-shadow 0.5s;
     }
 
     .timer h2 {
       margin-bottom: 0.3rem;
       color: #87cefa;
-      user-select: text;
     }
 
     .respawn-time {
       font-size: 0.95rem;
       color: #ccc;
       margin-bottom: 0.5rem;
-      user-select: text;
     }
 
     .controls button {
@@ -221,8 +65,7 @@
       cursor: pointer;
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
-      transition: background 0.3s, transform 0.1s;
-      user-select: none;
+      transition: background 0.3s, transform 0.1s, color 0.3s, border-color 0.3s;
     }
 
     .controls button:hover {
@@ -235,69 +78,152 @@
       color: #ffae00;
       font-weight: bold;
       min-height: 1.2em;
-      user-select: none;
+      transition: color 0.5s;
     }
 
     .icon {
       margin-left: 5px;
       font-size: 1.1rem;
-      user-select: none;
     }
 
-    /* Loader pantalla completa */
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 20, 40, 0.95);
-      color: #d0e7ff;
+    #login-form, #not-authorized {
+      margin-top: 2rem;
+    }
+
+    input {
       font-family: 'MedievalSharp', cursive;
+      margin: 0.5rem;
+      padding: 0.4rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      transition: background-color 0.5s, color 0.5s, border-color 0.5s;
+    }
+
+    .message {
+      color: red;
+      margin-top: 0.5rem;
+      transition: color 0.5s;
+    }
+
+    #logout {
+      margin-top: 1rem;
+      background: darkred;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #logout:hover {
+      background: #a00000;
+    }
+
+    /* Tema claro */
+    body.light {
+      background-color: #ffffff;
+      color: #222222;
+    }
+
+    body.light h1 {
+      color: #b8860b;
+      text-shadow: none;
+    }
+
+    body.light .timer {
+      background: rgba(245, 245, 245, 0.95);
+      border-color: #b8860b;
+      color: #222222;
+      box-shadow: 0 0 15px #aaa;
+    }
+
+    body.light .timer h2 {
+      color: #0055aa;
+    }
+
+    body.light .respawn-time {
+      color: #555;
+    }
+
+    body.light .controls button {
+      background: #b8860b;
+      color: #fff3b0;
+      border-color: #996b00;
+    }
+
+    body.light .controls button:hover {
+      background: #ffd700;
+      color: #000;
+    }
+
+    body.light #login-form {
+      background: rgba(255 255 255 / 0.95);
+      border-color: #b8860b;
+      color: #222;
+      box-shadow: 0 0 20px #b8860b;
+      padding: 1rem;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      z-index: 1000;
-      user-select: none;
     }
 
-    #loading-screen h2 {
-      font-size: 2rem;
-      color: gold;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    body.light #login-form input {
+      background: #fff;
+      color: #222;
+      border-color: #b8860b;
     }
 
-    #loading-screen p {
-      font-size: 1.2rem;
-      color: #87cefa;
+    body.light #login-form input::placeholder {
+      color: #aaa;
     }
 
-    /* Antorcha parpadeante */
-    .torch {
-      animation: flicker 1.5s infinite;
-      font-size: 2.5rem;
-      user-select: none;
+    body.light #login-form input:focus {
+      background: #fff8cc;
+      border-color: #ffd700;
+      outline: none;
     }
 
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+    body.light #login-form button {
+      background: linear-gradient(45deg, #b8860b, #ffd700);
+      color: #2f1f00;
+      box-shadow: 0 0 10px #d4af37;
+      border: none;
     }
 
+    body.light #login-form button:hover {
+      background: linear-gradient(45deg, #ffd700, #b8860b);
+    }
+
+    body.light #logout {
+      background: #996b00;
+      color: #fff3b0;
+      box-shadow: 0 0 8px #996b00;
+    }
+
+    body.light #logout:hover {
+      background: #b8860b;
+    }
+
+    body.light .message, 
+    body.light #not-authorized, 
+    body.light .warning {
+      color: #b8860b;
+    }
+
+    body.light .icon {
+      color: #996b00;
+    }
   </style>
 </head>
 <body>
   <h1>Cronómetro de Bosses - Imperium AO</h1>
 
-  <div id="loading-screen" style="display:none;">
-    <h2><span class="torch">🔥</span> Cargando... </h2>
-    <p>Validando tu acceso al Imperio</p>
-  </div>
-
   <div id="login-form">
-    <input type="email" id="email" placeholder="Email" autocomplete="username" />
-    <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Contraseña" />
     <button onclick="login()">Iniciar sesión</button>
     <button onclick="register()">Registrarse</button>
     <div class="message" id="message"></div>
@@ -309,23 +235,19 @@
 
   <button id="logout" style="display: none;" onclick="logout()">Cerrar sesión</button>
 
-  <div id="tools">
-    <input type="text" id="filter-input" placeholder="Buscar boss..." />
-    <select id="sort-select" title="Ordenar bosses">
-      <option value="name-asc">Ordenar por nombre ↑</option>
-      <option value="name-desc">Ordenar por nombre ↓</option>
-      <option value="min-asc">Respawn mínimo ↑</option>
-      <option value="min-desc">Respawn mínimo ↓</option>
-      <option value="max-asc">Respawn máximo ↑</option>
-      <option value="max-desc">Respawn máximo ↓</option>
+  <div class="timer-container" id="timers"></div>
+
+  <div id="tools" style="display: none; margin-top: 1.5rem; gap: 1rem; flex-wrap: wrap; justify-content: center; align-items: center;">
+    <input type="text" id="filter-input" placeholder="Buscar boss..." style="padding:0.4rem; border-radius:6px; border:1px solid #ccc; font-family: 'MedievalSharp', cursive; font-size:1rem;"/>
+    <select id="sort-select" style="padding:0.4rem; border-radius:6px; border:1px solid #ccc; font-family: 'MedievalSharp', cursive; font-size:1rem;">
+      <option value="name">Ordenar por nombre</option>
+      <option value="min">Ordenar por respawn mínimo</option>
+      <option value="max">Ordenar por respawn máximo</option>
     </select>
     <button id="toggle-respawn-btn">Ocultar respawn</button>
-    <button id="sync-btn">Sincronizar</button>
+    <button id="sync-btn">Sincronizar ahora</button>
     <button id="theme-btn">Tema claro</button>
-    <div id="last-update" style="margin-left: auto; font-size: 0.9rem; color: #ffd700; user-select:none;"></div>
   </div>
-
-  <div class="timer-container" id="timers"></div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -357,8 +279,6 @@
     const toggleRespawnBtn = document.getElementById("toggle-respawn-btn");
     const syncBtn = document.getElementById("sync-btn");
     const themeBtn = document.getElementById("theme-btn");
-    const lastUpdateDiv = document.getElementById("last-update");
-    const loadingScreen = document.getElementById("loading-screen");
 
     const bossesData = [
       { name: "Rey Dragón", min: 1320, max: 1800 },
@@ -379,7 +299,7 @@
 
     let timers = {};
     let respawnVisible = true;
-    let currentSort = "name-asc";
+    let currentSort = "name";
 
     function pad(n) {
       return String(n).padStart(2, "0");
@@ -394,25 +314,25 @@
       return `Respawn: ${fmt(min)} a ${fmt(max)}`;
     }
 
-    // Renderizo timers con filtro y orden
     function renderTimers() {
       timersContainer.innerHTML = "";
-      let filteredBosses = bossesData.filter(b => b.name.toLowerCase().includes(filterInput.value.toLowerCase()));
 
-      // ordeno
-      filteredBosses.sort((a, b) => {
-        switch(currentSort) {
-          case "name-asc": return a.name.localeCompare(b.name);
-          case "name-desc": return b.name.localeCompare(a.name);
-          case "min-asc": return a.min - b.min;
-          case "min-desc": return b.min - a.min;
-          case "max-asc": return a.max - b.max;
-          case "max-desc": return b.max - a.max;
-          default: return 0;
-        }
-      });
+      // Filtro por texto
+      const filterText = filterInput.value.trim().toLowerCase();
 
-      filteredBosses.forEach(boss => {
+      // Ordenar
+      let sortedBosses = [...bossesData];
+      if (currentSort === "name") {
+        sortedBosses.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (currentSort === "min") {
+        sortedBosses.sort((a, b) => a.min - b.min);
+      } else if (currentSort === "max") {
+        sortedBosses.sort((a, b) => a.max - b.max);
+      }
+
+      sortedBosses.forEach(boss => {
+        if (!boss.name.toLowerCase().includes(filterText)) return;
+
         const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
@@ -428,11 +348,9 @@
           <div id="warning-${bossKey}" class="warning"></div>
         `;
         timersContainer.appendChild(timerDiv);
-
-        if (!respawnVisible) {
-          document.getElementById(`respawn-${bossKey}`).style.display = "none";
-        }
       });
+
+      timersContainer.style.display = "flex";
     }
 
     function startTimer(bossName, deathTimestamp) {
@@ -470,6 +388,9 @@
     }
 
     function resetTimer(bossName) {
+      if (!confirm(`¿Seguro que querés reiniciar el timer de "${bossName}"? Esta acción no se puede deshacer.`)) {
+        return;
+      }
       const bossKey = bossName.replace(/\s+/g, "-");
       clearInterval(timers[bossName]);
       delete timers[bossName];
@@ -481,8 +402,6 @@
       if(warning) warning.textContent = "";
       database.ref("bosses/" + bossKey).remove();
     }
-
-    // Funciones removidas: pauseAllTimers, resetAllTimers
 
     function toggleRespawnVisibility() {
       respawnVisible = !respawnVisible;
@@ -519,7 +438,8 @@
       const h = pad(now.getHours());
       const m = pad(now.getMinutes());
       const s = pad(now.getSeconds());
-      lastUpdateDiv.textContent = `Última sincronización: ${h}:${m}:${s}`;
+      // Si querés mostrar este dato, podés agregar un div para mostrarlo.
+      // lastUpdateDiv.textContent = `Última sincronización: ${h}:${m}:${s}`;
     }
 
     async function syncTimers() {
@@ -529,13 +449,31 @@
 
     function changeTheme() {
       const body = document.body;
-      if(body.classList.contains("light")){
+      if (body.classList.contains("light")) {
         body.classList.remove("light");
+        body.classList.add("dark");
         themeBtn.textContent = "Tema claro";
       } else {
+        body.classList.remove("dark");
         body.classList.add("light");
         themeBtn.textContent = "Tema oscuro";
       }
+    }
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, pass).catch(e => showMessage(e.message));
+    }
+
+    function register() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, pass).catch(e => showMessage(e.message));
+    }
+
+    function logout() {
+      auth.signOut();
     }
 
     function showMessage(msg) {
@@ -551,97 +489,77 @@
       return snap.exists() && snap.val() === true;
     }
 
-    function showLoading() {
-      loadingScreen.style.display = "flex";
-    }
-
-    function hideLoading() {
-      loadingScreen.style.display = "none";
-    }
-
-    function login() {
-      clearMessage();
-      const email = document.getElementById("email").value.trim();
-      const pass = document.getElementById("password").value;
-      if (!email || !pass) {
-        showMessage("Email y contraseña son obligatorios");
-        return;
-      }
-      showLoading();
-      auth.signInWithEmailAndPassword(email, pass)
-        .catch(e => {
-          hideLoading();
-          showMessage(e.message);
-        });
-    }
-
-    function register() {
-      clearMessage();
-      const email = document.getElementById("email").value.trim();
-      const pass = document.getElementById("password").value;
-      if (!email || !pass) {
-        showMessage("Email y contraseña son obligatorios");
-        return;
-      }
-      showLoading();
-      auth.createUserWithEmailAndPassword(email, pass)
-        .catch(e => {
-          hideLoading();
-          showMessage(e.message);
-        });
-    }
-
-    function logout() {
-      auth.signOut();
-    }
-
     auth.onAuthStateChanged(async user => {
       if (user) {
-        showLoading();
         const allowed = await checkAuthorization(user.uid);
         if (allowed) {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "none";
           logoutButton.style.display = "block";
           toolsPanel.style.display = "flex";
-          timersContainer.style.display = "flex";
-
           renderTimers();
-          loadTimersFromFirebase();
+          await loadTimersFromFirebase();
         } else {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "block";
+          timersContainer.style.display = "none";
           logoutButton.style.display = "block";
           toolsPanel.style.display = "none";
-          timersContainer.style.display = "none";
         }
-        hideLoading();
         clearMessage();
       } else {
-        hideLoading();
-        loginForm.style.display = "flex";
+        loginForm.style.display = "block";
         notAuthorizedDiv.style.display = "none";
+        timersContainer.style.display = "none";
         logoutButton.style.display = "none";
         toolsPanel.style.display = "none";
-        timersContainer.style.display = "none";
         clearMessage();
       }
     });
 
+    // Eventos herramientas
     filterInput.addEventListener("input", () => {
       renderTimers();
-      loadTimersFromFirebase();
+      // Reiniciar timers visibles, porque el DOM se rehace
+      Object.entries(timers).forEach(([bossName, interval]) => clearInterval(interval));
+      timers = {};
+      // Volver a iniciar los timers que están en firebase y visibles
+      database.ref("bosses").once("value").then(snapshot => {
+        const data = snapshot.val() || {};
+        Object.entries(data).forEach(([bossKey, val]) => {
+          if(val && val.deathTime) {
+            const name = bossKey.replace(/-/g, " ");
+            const boss = bossesData.find(b => b.name.toLowerCase() === name.toLowerCase());
+            if(boss) startTimer(boss.name, val.deathTime);
+          }
+        });
+      });
     });
 
     sortSelect.addEventListener("change", () => {
       currentSort = sortSelect.value;
       renderTimers();
-      loadTimersFromFirebase();
+      Object.entries(timers).forEach(([bossName, interval]) => clearInterval(interval));
+      timers = {};
+      database.ref("bosses").once("value").then(snapshot => {
+        const data = snapshot.val() || {};
+        Object.entries(data).forEach(([bossKey, val]) => {
+          if(val && val.deathTime) {
+            const name = bossKey.replace(/-/g, " ");
+            const boss = bossesData.find(b => b.name.toLowerCase() === name.toLowerCase());
+            if(boss) startTimer(boss.name, val.deathTime);
+          }
+        });
+      });
     });
 
     toggleRespawnBtn.addEventListener("click", toggleRespawnVisibility);
     syncBtn.addEventListener("click", syncTimers);
     themeBtn.addEventListener("click", changeTheme);
+
+    // Inicializar tema oscuro por defecto
+    document.body.classList.add("dark");
+    themeBtn.textContent = "Tema claro";
   </script>
 </body>
 </html>
