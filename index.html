@@ -439,7 +439,7 @@
       color: #fff;
     }
 
-    /* ==== Input hora para "murió" ==== */
+    /* ==== Input hora para \"murió\" ==== */
     .death-time-input {
       margin-top: 0.6rem;
       width: 70%;
@@ -461,7 +461,7 @@
       border-color: #6699cc;
     }
 
-    /* Botón "Murió recién" */
+    /* Botón \"Murió recién\" */
     .btn-murio {
       margin-top: 0.6rem;
       padding: 0.3rem 0.6rem;
@@ -534,410 +534,282 @@
   <!-- Audios para sonidos -->
   <audio id="soundSpawn" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
   <audio id="soundSpawned" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+<script>
+  // Datos de bosses ejemplo (puedes agregar o modificar)
+  const bosses = [
+    {
+      id: 'boss1',
+      name: 'Gorgona',
+      respawnMin: 30, // minutos
+      respawnMax: 45, // minutos
+    },
+    {
+      id: 'boss2',
+      name: 'Vampiro Transformado',
+      respawnMin: 60,
+      respawnMax: 90,
+    },
+    {
+      id: 'boss3',
+      name: 'Garveloth',
+      respawnMin: 120,
+      respawnMax: 180,
+    },
+  ];
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  // Estado general
+  let timers = {};
+  let timerInterval = null;
+  let theme = localStorage.getItem('theme') || 'dark';
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAizvPiX4f2hk4KFxD0J9Hm7hdfoNXz60Y",
-      authDomain: "cronometroiao.firebaseapp.com",
-      databaseURL: "https://cronometroiao-default-rtdb.firebaseio.com",
-      projectId: "cronometroiao",
-      storageBucket: "cronometroiao.appspot.com",
-      messagingSenderId: "906013460712",
-      appId: "1:906013460712:web:fdf87311000fc2288e615d"
-    };
+  document.body.className = theme;
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
+  // Formatear tiempo a "mm min" o "Xh Y min"
+  function formatMinutes(mins) {
+    if (mins < 60) return `${mins} min`;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m === 0 ? `${h}h` : `${h}h ${m} min`;
+  }
 
-    const timersContainer = document.getElementById("timers");
-    const loginForm = document.getElementById("login-form");
-    const notAuthorizedDiv = document.getElementById("not-authorized");
-    const logoutBtn = document.getElementById("logout");
-    const messageDiv = document.getElementById("message");
-    const toolsDiv = document.getElementById("tools");
-    const searchInput = document.getElementById("searchInput");
-    const themeToggle = document.getElementById("themeToggle");
-    const soundSpawn = document.getElementById("soundSpawn");
-    const soundSpawned = document.getElementById("soundSpawned");
+  // Función para guardar el tiempo de muerte (hora) de un boss
+  function saveDeathTime(bossId, deathTimeISO) {
+    timers[bossId] = deathTimeISO;
+    localStorage.setItem('timers', JSON.stringify(timers));
+  }
 
-    // Estados y rangos en horas
-    const bosses = [
-      { name: "Rey Dragón", minDelay: 22, maxDelay: 30 },
-      { name: "Dragón Legendario", minDelay: 16, maxDelay: 24 },
-      { name: "Gran Dragón Negro", minDelay: 12, maxDelay: 20 },
-      { name: "Gran Dragón Rojo", minDelay: 12, maxDelay: 20 },
-      { name: "Archimago Abisal", minDelay: 9, maxDelay: 18 },
-      { name: "Gran Dragón Azul", minDelay: 8, maxDelay: 14 },
-      { name: "Eishner", minDelay: 9, maxDelay: 18 },
-      { name: "Gran Dragón Verde", minDelay: 2, maxDelay: 5 },
-      { name: "Djinn", minDelay: 7, maxDelay: 15 },
-      { name: "Lilith", minDelay: 2, maxDelay: 3.5 },
-      { name: "Abyssaria", minDelay: 3.5, maxDelay: 9 },
-      { name: "Garveloth", minDelay: 0.5, maxDelay: 0.75 }, // 30m a 45m
-      { name: "Vampiro Transformado", minDelay: 0.5, maxDelay: 0.75 } // 30m a 45m
-    ];
+  // Cargar timers guardados
+  function loadTimers() {
+    const saved = localStorage.getItem('timers');
+    timers = saved ? JSON.parse(saved) : {};
+  }
 
-    let userUID = null;
-    let userAuthorized = false;
-    let timersData = {};
-    let theme = "dark";
+  // Renderizar todos los timers
+  function renderTimers() {
+    const container = document.getElementById('timers');
+    container.innerHTML = '';
 
-    function setMessage(msg) {
-      messageDiv.textContent = msg;
-    }
+    bosses.forEach(boss => {
+      const deathTimeISO = timers[boss.id];
+      const timerEl = document.createElement('div');
+      timerEl.className = 'timer beforeSpawn';
+      timerEl.id = `timer-${boss.id}`;
 
-    function toggleTheme() {
-      if (theme === "dark") {
-        theme = "light";
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
-        themeToggle.textContent = "Cambiar a tema oscuro";
-      } else {
-        theme = "dark";
-        document.body.classList.remove("light");
-        document.body.classList.add("dark");
-        themeToggle.textContent = "Cambiar a tema claro";
-      }
-      // Guardar preferencia en localStorage
-      localStorage.setItem("theme", theme);
-    }
+      // Nombre boss + icono
+      const title = document.createElement('h2');
+      title.textContent = boss.name;
 
-    function applySavedTheme() {
-      const saved = localStorage.getItem("theme");
-      if (saved) {
-        theme = saved;
-      }
-      if (theme === "light") {
-        document.body.classList.add("light");
-        themeToggle.textContent = "Cambiar a tema oscuro";
-      } else {
-        document.body.classList.add("dark");
-        themeToggle.textContent = "Cambiar a tema claro";
-      }
-    }
+      // Input hora muerte + botón "Murió recién"
+      const inputGroup = document.createElement('div');
+      inputGroup.className = 'input-group';
 
-    // LOGIN y autorización
+      const inputHour = document.createElement('input');
+      inputHour.type = 'time';
+      inputHour.className = 'death-time-input';
+      inputHour.title = 'Hora a la que murió el boss';
+      inputHour.value = deathTimeISO ? new Date(deathTimeISO).toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'}) : '';
 
-    async function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) {
-        setMessage("Ingresá email y contraseña");
-        return;
-      }
-      setMessage("");
-      document.getElementById("loading-screen").style.display = "flex";
-      try {
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        userUID = userCredential.user.uid;
-        checkAuthorization();
-      } catch (error) {
-        setMessage("Error al iniciar sesión: " + error.message);
-        document.getElementById("loading-screen").style.display = "none";
-      }
-    }
+      // Actualizar tiempo al cambiar input
+      inputHour.onchange = () => {
+        const now = new Date();
+        const [h, m] = inputHour.value.split(':').map(Number);
+        if (isNaN(h) || isNaN(m)) return;
 
-    async function register() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) {
-        setMessage("Ingresá email y contraseña");
-        return;
-      }
-      setMessage("");
-      document.getElementById("loading-screen").style.display = "flex";
-      try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        userUID = userCredential.user.uid;
-        // En DB, crear nodo allowedUsers con false para autorización pendiente
-        await database.ref("allowedUsers/" + userUID).set(false);
-        setMessage("Registrado. Esperá aprobación.");
-        document.getElementById("loading-screen").style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        loginForm.style.display = "none";
-      } catch (error) {
-        setMessage("Error al registrar: " + error.message);
-        document.getElementById("loading-screen").style.display = "none";
-      }
-    }
+        // Construimos fecha ISO con la hora puesta, asumiendo hoy o ayer si hora es mayor a la actual
+        let deathDate = new Date(now);
+        deathDate.setHours(h, m, 0, 0);
 
-    function logout() {
-      auth.signOut();
-      userUID = null;
-      userAuthorized = false;
-      timersData = {};
-      timersContainer.style.display = "none";
-      loginForm.style.display = "flex";
-      logoutBtn.style.display = "none";
-      notAuthorizedDiv.style.display = "none";
-      toolsDiv.style.display = "none";
-      themeToggle.style.display = "none";
-      setMessage("");
-    }
-
-    function checkAuthorization() {
-      if (!userUID) return;
-      // Verifica si el UID está autorizado
-      const ref = database.ref("allowedUsers/" + userUID);
-      ref.on("value", (snapshot) => {
-        const val = snapshot.val();
-        if (val === true) {
-          userAuthorized = true;
-          loginForm.style.display = "none";
-          notAuthorizedDiv.style.display = "none";
-          logoutBtn.style.display = "inline-block";
-          toolsDiv.style.display = "flex";
-          themeToggle.style.display = "inline-block";
-          timersContainer.style.display = "flex";
-          loadTimersData();
-          setMessage("");
-        } else {
-          userAuthorized = false;
-          notAuthorizedDiv.style.display = "block";
-          loginForm.style.display = "none";
-          logoutBtn.style.display = "inline-block";
-          timersContainer.style.display = "none";
-          toolsDiv.style.display = "none";
-          themeToggle.style.display = "none";
-          setMessage("No autorizado");
+        if (deathDate > now) {
+          // Si la hora es mayor a la actual, asumo que es del día anterior
+          deathDate.setDate(deathDate.getDate() - 1);
         }
-        document.getElementById("loading-screen").style.display = "none";
-      });
-    }
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        userUID = user.uid;
-        checkAuthorization();
+        saveDeathTime(boss.id, deathDate.toISOString());
+        updateAllTimers();
+      };
+
+      const btnMurioRecien = document.createElement('button');
+      btnMurioRecien.textContent = 'Murió recién';
+      btnMurioRecien.className = 'btn-murio';
+      btnMurioRecien.title = 'Poner hora actual';
+      btnMurioRecien.onclick = () => {
+        const now = new Date();
+        saveDeathTime(boss.id, now.toISOString());
+        inputHour.value = now.toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
+        updateAllTimers();
+      };
+
+      inputGroup.appendChild(inputHour);
+      inputGroup.appendChild(btnMurioRecien);
+
+      // Mostrar ventana respawn
+      const respawnTime = document.createElement('div');
+      respawnTime.className = 'respawn-time';
+      respawnTime.textContent = `Respawn: ${formatMinutes(boss.respawnMin)} a ${formatMinutes(boss.respawnMax)}`;
+
+      // Tiempo restante / crono
+      const timerTime = document.createElement('div');
+      timerTime.className = 'timer-time';
+      timerTime.textContent = '--:--';
+
+      // Icono 🔥⚠️ según estado
+      const timerIcon = document.createElement('span');
+      timerIcon.className = 'timer-icon';
+      timerIcon.style.marginLeft = '6px';
+
+      // Estado para controlar colores y texto
+      let state = 'beforeSpawn'; // beforeSpawn, canSpawn, spawned
+
+      // Función para actualizar timer y estado
+      function updateTimer() {
+        if (!timers[boss.id]) {
+          timerTime.textContent = '--:--';
+          timerEl.className = 'timer beforeSpawn';
+          timerIcon.style.display = 'none';
+          return;
+        }
+        const now = new Date();
+        const deathTime = new Date(timers[boss.id]);
+        const diffMs = now - deathTime;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 0) {
+          // Si la hora puesta es futura (error), resetear
+          timerTime.textContent = '--:--';
+          timerEl.className = 'timer beforeSpawn';
+          timerIcon.style.display = 'none';
+          return;
+        }
+
+        if (diffMins < boss.respawnMin) {
+          // Antes del mínimo spawn
+          state = 'beforeSpawn';
+          const remaining = boss.respawnMin - diffMins;
+          timerTime.textContent = `Spawn en ${formatMinutes(remaining)}`;
+          timerIcon.style.display = 'none';
+          timerEl.className = 'timer beforeSpawn';
+        } else if (diffMins >= boss.respawnMin && diffMins <= boss.respawnMax) {
+          // Dentro ventana spawn
+          state = 'canSpawn';
+          const remaining = boss.respawnMax - diffMins;
+          timerTime.textContent = `Spawn posible (${formatMinutes(remaining)} restantes) 🔥`;
+          timerIcon.style.display = 'inline-block';
+          timerIcon.style.backgroundColor = '#ff6600'; // naranja
+          timerIcon.style.animation = 'blink 1.5s infinite';
+          timerEl.className = 'timer canSpawn';
+        } else {
+          // Pasó ventana spawn
+          state = 'spawned';
+          timerTime.textContent = 'Spawn confirmado ⚠️';
+          timerIcon.style.display = 'inline-block';
+          timerIcon.style.backgroundColor = '#ff0000'; // rojo
+          timerIcon.style.animation = 'blink 1.5s infinite';
+          timerEl.className = 'timer spawned';
+        }
+      }
+
+      // Actualizar al cargar
+      updateTimer();
+
+      // Guardar función para actualización periódica
+      timerEl.updateTimer = updateTimer;
+
+      // Agregar todos los elementos al timer
+      title.appendChild(timerIcon);
+      timerEl.appendChild(title);
+      timerEl.appendChild(inputGroup);
+      timerEl.appendChild(respawnTime);
+      timerEl.appendChild(timerTime);
+
+      container.appendChild(timerEl);
+    });
+  }
+
+  // Actualizar todos los timers
+  function updateAllTimers() {
+    bosses.forEach(boss => {
+      const el = document.getElementById(`timer-${boss.id}`);
+      if (el && el.updateTimer) el.updateTimer();
+    });
+  }
+
+  // Filtrar bosses por nombre
+  function filterBosses() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    bosses.forEach(boss => {
+      const el = document.getElementById(`timer-${boss.id}`);
+      if (!el) return;
+      if (boss.name.toLowerCase().includes(query)) {
+        el.style.display = 'flex';
       } else {
-        userUID = null;
-        userAuthorized = false;
-        loginForm.style.display = "flex";
-        logoutBtn.style.display = "none";
-        timersContainer.style.display = "none";
-        notAuthorizedDiv.style.display = "none";
-        toolsDiv.style.display = "none";
-        themeToggle.style.display = "none";
-        setMessage("");
+        el.style.display = 'none';
       }
     });
+  }
 
-    // Cargar datos de timers guardados por usuario
-    function loadTimersData() {
-      if (!userUID) return;
-      const ref = database.ref("timers/" + userUID);
-      ref.on("value", (snapshot) => {
-        timersData = snapshot.val() || {};
-        renderTimers();
-      });
+  // Alternar tema
+  function toggleTheme() {
+    if (theme === 'dark') {
+      theme = 'light';
+      document.body.className = 'light';
+      document.getElementById('themeToggle').textContent = 'Cambiar a tema oscuro';
+    } else {
+      theme = 'dark';
+      document.body.className = 'dark';
+      document.getElementById('themeToggle').textContent = 'Cambiar a tema claro';
     }
+    localStorage.setItem('theme', theme);
+  }
 
-    // Guardar datos en DB
-    function saveTimerData(bossName, deathTimeISO) {
-      if (!userUID) return;
-      if (!timersData) timersData = {};
-      timersData[bossName] = deathTimeISO;
-      database.ref("timers/" + userUID).set(timersData);
+  // Simulación simple login/logout (reemplazar con Firebase)
+  function login() {
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    if (!email || !pass) {
+      alert('Ingrese email y contraseña');
+      return;
     }
+    // Simular login
+    localStorage.setItem('userEmail', email);
+    onLoginSuccess();
+  }
 
-    // Crear y mostrar los timers
-    function renderTimers() {
-      timersContainer.innerHTML = "";
-      bosses.forEach((boss) => {
-        const container = document.createElement("div");
-        container.className = "timer beforeSpawn";
-        container.id = "timer-" + boss.name.replace(/\s+/g, "-").toLowerCase();
+  function register() {
+    alert('Funcionalidad de registro no implementada aquí.');
+  }
 
-        // Título boss con icono parpadeante
-        const h2 = document.createElement("h2");
-        h2.textContent = boss.name;
-        const icon = document.createElement("span");
-        icon.className = "timer-icon";
-        h2.appendChild(icon);
-        container.appendChild(h2);
+  function logout() {
+    localStorage.removeItem('userEmail');
+    location.reload();
+  }
 
-        // Info rango spawn
-        const respawnRange = document.createElement("div");
-        respawnRange.className = "respawn-time";
-        respawnRange.textContent = `Respawn: ${formatDelay(boss.minDelay)} a ${formatDelay(boss.maxDelay)}`;
-        container.appendChild(respawnRange);
+  function onLoginSuccess() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('logout').style.display = 'inline-block';
+    document.getElementById('tools').style.display = 'flex';
+    document.getElementById('themeToggle').style.display = 'inline-block';
+    document.getElementById('timers').style.display = 'flex';
 
-        // Tiempo restante display
-        const timerTime = document.createElement("div");
-        timerTime.className = "timer-time";
-        timerTime.textContent = "00:00:00";
-        container.appendChild(timerTime);
+    loadTimers();
+    renderTimers();
 
-        // Input para "murió" (hora ISO, fecha y hora local)
-        const inputGroup = document.createElement("div");
-        inputGroup.className = "input-group";
+    timerInterval = setInterval(updateAllTimers, 10000); // actualiza cada 10s
+  }
 
-        const deathInput = document.createElement("input");
-        deathInput.type = "datetime-local";
-        deathInput.className = "death-time-input";
-        deathInput.title = "Hora de muerte del boss";
-        deathInput.step = "60"; // solo minutos
-        deathInput.value = "";
-
-        const btnMurio = document.createElement("button");
-        btnMurio.className = "btn-murio";
-        btnMurio.textContent = "Murió recién";
-        btnMurio.title = "Marcar muerte en este momento";
-
-        inputGroup.appendChild(deathInput);
-        inputGroup.appendChild(btnMurio);
-
-        container.appendChild(inputGroup);
-
-        // Guardar referencias para actualización
-        container._timerTime = timerTime;
-        container._deathInput = deathInput;
-
-        // Cargar valor guardado en input si existe
-        if (timersData[boss.name]) {
-          // timersData guarda ISO string, convertir a formato datetime-local
-          const d = new Date(timersData[boss.name]);
-          // Ajustar a local, formatear "YYYY-MM-DDTHH:mm"
-          const localISO = d.toISOString().slice(0,16);
-          deathInput.value = localISO;
-        }
-
-        // Evento input cambio manual
-        deathInput.addEventListener("change", () => {
-          if (deathInput.value) {
-            const isoString = new Date(deathInput.value).toISOString();
-            saveTimerData(boss.name, isoString);
-          } else {
-            // borrar timer guardado
-            if (timersData[boss.name]) {
-              delete timersData[boss.name];
-              database.ref("timers/" + userUID).set(timersData);
-            }
-          }
-        });
-
-        // Evento botón murio recién
-        btnMurio.addEventListener("click", () => {
-          const now = new Date();
-          // Ajustar a formato datetime-local "YYYY-MM-DDTHH:mm"
-          const pad = (n) => n.toString().padStart(2, "0");
-          const localStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-          deathInput.value = localStr;
-          const isoString = now.toISOString();
-          saveTimerData(boss.name, isoString);
-        });
-
-        timersContainer.appendChild(container);
-      });
-      updateTimers();
+  // Al cargar la página, check login
+  window.onload = () => {
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail) {
+      onLoginSuccess();
+    } else {
+      document.getElementById('login-form').style.display = 'flex';
+      document.getElementById('logout').style.display = 'none';
+      document.getElementById('tools').style.display = 'none';
+      document.getElementById('themeToggle').style.display = 'none';
+      document.getElementById('timers').style.display = 'none';
     }
-
-    // Función para formatear delays en horas y minutos
-    function formatDelay(hours) {
-      if (hours < 1) {
-        return `${Math.round(hours * 60)}m`;
-      } else if (Number.isInteger(hours)) {
-        return `${hours}h`;
-      } else {
-        // Ejemplo 3.5 = 3h 30m
-        const h = Math.floor(hours);
-        const m = Math.round((hours - h) * 60);
-        return `${h}h ${m}m`;
-      }
-    }
-
-    // Actualiza todos los timers y su estado
-    function updateTimers() {
-      const now = new Date();
-
-      bosses.forEach((boss) => {
-        const container = document.getElementById("timer-" + boss.name.replace(/\s+/g, "-").toLowerCase());
-        if (!container) return;
-
-        const deathISO = timersData[boss.name];
-        const deathDate = deathISO ? new Date(deathISO) : null;
-
-        const minDelayMs = boss.minDelay * 3600 * 1000;
-        const maxDelayMs = boss.maxDelay * 3600 * 1000;
-
-        let elapsed = deathDate ? now - deathDate : null;
-
-        // Estados y colores
-        // beforeSpawn: no pasó minDelay aún
-        // canSpawn: entre minDelay y maxDelay (puede spawnear)
-        // spawned: pasó maxDelay (ya spawneó)
-        let state = "beforeSpawn";
-        let timeToShow = 0;
-
-        if (!deathDate) {
-          // No murió aún, tiempo completo para spawn
-          state = "beforeSpawn";
-          timeToShow = boss.minDelay * 3600 * 1000;
-        } else if (elapsed < minDelayMs) {
-          state = "beforeSpawn";
-          timeToShow = minDelayMs - elapsed;
-        } else if (elapsed >= minDelayMs && elapsed < maxDelayMs) {
-          state = "canSpawn";
-          timeToShow = maxDelayMs - elapsed;
-        } else {
-          state = "spawned";
-          timeToShow = 0;
-        }
-
-        // Actualizar clase del timer
-        container.classList.remove("beforeSpawn", "canSpawn", "spawned");
-        container.classList.add(state);
-
-        // Mostrar cronómetro siempre
-        container._timerTime.textContent = formatMsToHHMMSS(timeToShow);
-
-        // Para estado spawned poner 00:00:00
-        if (state === "spawned") {
-          container._timerTime.textContent = "00:00:00";
-        }
-      });
-    }
-
-    // Formatea milisegundos a HH:MM:SS
-    function formatMsToHHMMSS(ms) {
-      if (ms < 0) ms = 0;
-      const totalSeconds = Math.floor(ms / 1000);
-      const h = Math.floor(totalSeconds / 3600);
-      const m = Math.floor((totalSeconds % 3600) / 60);
-      const s = totalSeconds % 60;
-      return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
-    }
-
-    // Filtrar bosses por texto
-    function filterBosses() {
-      const text = searchInput.value.toLowerCase();
-      bosses.forEach((boss) => {
-        const el = document.getElementById("timer-" + boss.name.replace(/\s+/g, "-").toLowerCase());
-        if (!el) return;
-        if (boss.name.toLowerCase().includes(text)) {
-          el.style.display = "flex";
-        } else {
-          el.style.display = "none";
-        }
-      });
-    }
-
-    // Actualizar timers cada 10 segundos
-    setInterval(() => {
-      if (userAuthorized) {
-        updateTimers();
-      }
-    }, 10000);
-
-    // Aplicar tema guardado y listo
-    applySavedTheme();
-
-  </script>
+  };
+</script>
 </body>
 </html>
