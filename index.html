@@ -4,66 +4,172 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cronómetro de Bosses - Imperium AO</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
   <style>
-    @keyframes flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        opacity: 1;
-        text-shadow:
-          0 0 5px #f9d71c,
-          0 0 10px #f9d71c,
-          0 0 20px #f9d71c,
-          0 0 30px #f9d71c,
-          0 0 40px #ffec7f;
-      }
-      20%, 22%, 24%, 55% {
-        opacity: 0.7;
-        text-shadow: none;
-      }
-    }
-
-    #loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #000a;
-      color: #f9d71c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'MedievalSharp', cursive;
-      font-size: 2.5rem;
-      z-index: 9999;
-      backdrop-filter: blur(3px);
-      animation: flicker 2s infinite;
-    }
-
+    /* ==== Estilos Globales ==== */
     body {
       margin: 0;
       padding: 2rem;
       font-family: 'MedievalSharp', cursive;
-      background: #0a0f1a url('https://i.imgur.com/q35ZzqX.png') no-repeat center center fixed;
-      background-size: 600px;
+      background-color: #0a0f1a;
       color: #d0e7ff;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background-color 0.5s, color 0.5s;
+      min-height: 100vh;
+    }
+    body.dark {
+      background-color: #0a0f1a;
+      color: #d0e7ff;
+    }
+    body.light {
+      background-color: #fff;
+      color: #000;
     }
 
     h1 {
       font-size: 2.5rem;
       color: gold;
       text-shadow: 0 0 10px #000;
+      margin-bottom: 1.5rem;
+      user-select: none;
     }
 
+    /* ==== Login Form Mejorado ==== */
+    #login-form {
+      background: rgba(20, 30, 60, 0.9);
+      border: 3px solid gold;
+      border-radius: 15px;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 0 20px gold;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      user-select: none;
+    }
+
+    body.light #login-form {
+      background: #fefefe;
+      border-color: #daa520;
+      box-shadow: 0 0 15px #daa520;
+      color: #222;
+    }
+
+    #login-form input[type="email"],
+    #login-form input[type="password"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      font-size: 1.1rem;
+      border: 2px solid #87cefa;
+      border-radius: 8px;
+      font-family: 'MedievalSharp', cursive;
+      background: #0a0f1a;
+      color: #d0e7ff;
+      transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+      user-select: text;
+    }
+
+    body.light #login-form input[type="email"],
+    body.light #login-form input[type="password"] {
+      background: #fff;
+      color: #222;
+      border-color: #6699cc;
+    }
+
+    #login-form input[type="email"]::placeholder,
+    #login-form input[type="password"]::placeholder {
+      color: #a0c8ff;
+    }
+
+    body.light #login-form input[type="email"]::placeholder,
+    body.light #login-form input[type="password"]::placeholder {
+      color: #667799;
+    }
+
+    #login-form input[type="email"]:focus,
+    #login-form input[type="password"]:focus {
+      border-color: gold;
+      outline: none;
+      background-color: #112244;
+      color: #ffd700;
+    }
+
+    body.light #login-form input[type="email"]:focus,
+    body.light #login-form input[type="password"]:focus {
+      background-color: #fffbdd;
+      color: #aa7700;
+    }
+
+    #login-form button {
+      width: 100%;
+      background: #003366;
+      color: #d0e7ff;
+      border: 3px solid gold;
+      padding: 0.8rem 1rem;
+      font-size: 1.15rem;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, transform 0.1s;
+      user-select: none;
+    }
+
+    #login-form button:hover {
+      background-color: gold;
+      color: #003366;
+      transform: scale(1.05);
+    }
+
+    body.light #login-form button {
+      background: #f0e68c;
+      color: #003366;
+      border-color: #daa520;
+    }
+
+    body.light #login-form button:hover {
+      background-color: #daa520;
+      color: #fff;
+    }
+
+    #message {
+      color: #ff6961;
+      font-weight: bold;
+      min-height: 1.4em;
+      text-align: center;
+      user-select: none;
+    }
+
+    /* Ajustes logout button */
+    #logout {
+      margin-top: 1rem;
+      background: darkred;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      user-select: none;
+    }
+
+    #logout:hover {
+      background: red;
+    }
+
+    /* ==== Timer container ==== */
     .timer-container {
       display: none;
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
       margin-top: 2rem;
+      max-width: 960px;
     }
 
     .timer {
@@ -71,33 +177,70 @@
       border: 2px solid gold;
       border-radius: 12px;
       padding: 1rem;
-      width: 250px;
+      width: 270px;
       text-align: center;
       box-shadow: 0 0 15px #000;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    body.light .timer {
+      background: #f9f9f9cc;
+      border-color: #daa520;
+      color: #222;
+      box-shadow: 0 0 12px #daa520;
     }
 
     .timer h2 {
       margin-bottom: 0.3rem;
       color: #87cefa;
+      user-select: text;
+    }
+
+    body.light .timer h2 {
+      color: #336699;
     }
 
     .respawn-time {
       font-size: 0.95rem;
       color: #ccc;
       margin-bottom: 0.5rem;
+      user-select: text;
+    }
+
+    body.light .respawn-time {
+      color: #555;
+    }
+
+    .timer-time {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 0.7rem;
+      user-select: text;
+      font-family: monospace;
+    }
+
+    .controls {
+      margin-top: auto;
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     .controls button {
-      margin: 0.25rem;
-      padding: 0.5rem 1rem;
       background: #003366;
       color: #d0e7ff;
       border: 2px solid #87cefa;
       border-radius: 6px;
-      cursor: pointer;
+      padding: 0.4rem 0.8rem;
       font-weight: bold;
       font-family: 'MedievalSharp', cursive;
+      cursor: pointer;
       transition: background 0.3s, transform 0.1s;
+      user-select: none;
+      min-width: 90px;
     }
 
     .controls button:hover {
@@ -105,50 +248,157 @@
       transform: scale(1.05);
     }
 
+    body.light .controls button {
+      background: #f0e68c;
+      color: #003366;
+      border-color: #daa520;
+    }
+
+    body.light .controls button:hover {
+      background: #daa520;
+      color: #fff;
+    }
+
     .warning {
       margin-top: 0.5rem;
       color: #ffae00;
       font-weight: bold;
       min-height: 1.2em;
+      user-select: text;
     }
 
     .icon {
       margin-left: 5px;
       font-size: 1.1rem;
+      user-select: none;
     }
 
-    #login-form, #not-authorized {
+    #not-authorized {
       margin-top: 2rem;
+      font-weight: bold;
+      color: #ffae00;
+      user-select: none;
     }
 
-    input {
-      font-family: 'MedievalSharp', cursive;
-      margin: 0.5rem;
-      padding: 0.4rem;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .message {
-      color: red;
-      margin-top: 0.5rem;
-    }
-
-    #logout {
+    /* ==== Herramientas usuario ==== */
+    #tools {
       margin-top: 1rem;
-      background: darkred;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      user-select: none;
+    }
+
+    #tools input[type="text"] {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 2px solid #87cefa;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      background: #0a0f1a;
+      color: #d0e7ff;
+      transition: border-color 0.3s;
+    }
+
+    body.light #tools input[type="text"] {
+      background: #fff;
+      color: #222;
+      border-color: #6699cc;
+    }
+
+    #tools button {
+      background: #003366;
+      color: #d0e7ff;
+      border: 2px solid #87cefa;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    #tools button:hover {
+      background: #0055aa;
+      transform: scale(1.05);
+    }
+
+    body.light #tools button {
+      background: #f0e68c;
+      color: #003366;
+      border-color: #daa520;
+    }
+
+    body.light #tools button:hover {
+      background: #daa520;
+      color: #fff;
+    }
+
+    /* ==== Tema Claro / Oscuro ==== */
+    #themeToggle {
+      margin-top: 2rem;
+      padding: 0.5rem 1rem;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 2px solid gold;
+      background: #003366;
+      color: #d0e7ff;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s;
+      align-self: center;
+    }
+
+    #themeToggle:hover {
+      background: gold;
+      color: #003366;
+    }
+
+    body.light #themeToggle {
+      background: #f0e68c;
+      color: #003366;
+      border-color: #daa520;
+    }
+
+    body.light #themeToggle:hover {
+      background: #daa520;
+      color: #fff;
+    }
+
+    /* ==== Input hora para "murió" ==== */
+    .death-time-input {
+      margin-top: 0.6rem;
+      width: 90%;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      border: 2px solid #87cefa;
+      font-family: monospace;
+      font-size: 1rem;
+      text-align: center;
+      user-select: text;
+      background: #0a0f1a;
+      color: #d0e7ff;
+      transition: border-color 0.3s;
+    }
+
+    body.light .death-time-input {
+      background: #fff;
+      color: #222;
+      border-color: #6699cc;
     }
   </style>
 </head>
-<body>
-  <div id="loader">Cargando el Imperium...</div>
-
+<body class="dark">
   <h1>Cronómetro de Bosses - Imperium AO</h1>
 
   <div id="login-form">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Contraseña" />
+    <input type="email" id="email" placeholder="Email" autocomplete="username" />
+    <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
     <button onclick="login()">Iniciar sesión</button>
     <button onclick="register()">Registrarse</button>
     <div class="message" id="message"></div>
@@ -160,8 +410,17 @@
 
   <button id="logout" style="display: none;" onclick="logout()">Cerrar sesión</button>
 
+  <!-- Herramientas usuario: Buscar, sincronizar, filtrar -->
+  <div id="tools" style="display:none;">
+    <input type="text" id="searchInput" placeholder="Buscar boss..." oninput="filterBosses()" />
+    <button onclick="syncTimers()">Sincronizar Timers</button>
+  </div>
+
+  <button id="themeToggle" style="display:none;" onclick="toggleTheme()">Cambiar a tema claro</button>
+
   <div class="timer-container" id="timers"></div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -186,6 +445,9 @@
     const notAuthorizedDiv = document.getElementById("not-authorized");
     const messageDiv = document.getElementById("message");
     const logoutButton = document.getElementById("logout");
+    const toolsDiv = document.getElementById("tools");
+    const themeToggleBtn = document.getElementById("themeToggle");
+    const searchInput = document.getElementById("searchInput");
 
     const bosses = [
       { name: "Rey Dragón", min: 1320, max: 1800 },
@@ -204,7 +466,8 @@
       { name: "Gorgona", min: 60, max: 120 }
     ];
 
-    const timers = {};
+    let timers = {};
+    let currentTheme = "dark";
 
     function pad(n) {
       return String(n).padStart(2, "0");
@@ -219,26 +482,43 @@
       return `Respawn: ${fmt(min)} a ${fmt(max)}`;
     }
 
-    function showTimers() {
+    // Muestra timers filtrados según búsqueda
+    function showTimers(filter = "") {
       timersContainer.innerHTML = "";
-      timersContainer.style.display = "flex";
-      bosses.forEach(boss => {
+      const filteredBosses = bosses.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
+      filteredBosses.forEach(boss => {
         const bossKey = boss.name.replace(/\s+/g, "-");
         const timerDiv = document.createElement("div");
         timerDiv.className = "timer";
         timerDiv.id = `timer-${bossKey}`;
+
         timerDiv.innerHTML = `
           <h2>${boss.name} <span class="icon" id="icon-${bossKey}"></span></h2>
           <div class="respawn-time">${formatRespawn(boss.min, boss.max)}</div>
-          <div id="${boss.name}-time">00:00:00</div>
+          <div id="${boss.name}-time" class="timer-time">00:00:00</div>
+
+          <input type="time" id="time-input-${bossKey}" class="death-time-input" title="Ingrese hora de muerte y presione Enter" />
+
           <div class="controls">
-            <button onclick="markDead('${boss.name}')">Murió ahora</button>
-            <button onclick="resetTimer('${boss.name}')">Reset</button>
+            <button onclick="markDeadNow('${boss.name}')">Murió ahora</button>
+            <button onclick="resetTimerConfirm('${boss.name}')">Reset</button>
           </div>
           <div id="warning-${bossKey}" class="warning"></div>
         `;
+
         timersContainer.appendChild(timerDiv);
 
+        // Evento para input hora muerte
+        const timeInput = document.getElementById(`time-input-${bossKey}`);
+        timeInput.addEventListener("keydown", e => {
+          if (e.key === "Enter") {
+            const val = timeInput.value;
+            if (!val) return alert("Por favor, ingresa una hora válida.");
+            markDeadAtTime(boss.name, val);
+          }
+        });
+
+        // Firebase listener
         const ref = database.ref("bosses/" + bossKey + "/deathTime");
         ref.on("value", snapshot => {
           const deathTime = snapshot.val();
@@ -246,6 +526,8 @@
           else resetTimer(boss.name);
         });
       });
+
+      timersContainer.style.display = filteredBosses.length ? "flex" : "none";
     }
 
     function startTimer(bossName, deathTimestamp) {
@@ -261,6 +543,12 @@
       timers[bossName] = setInterval(() => {
         const now = Date.now();
         const diff = now - deathTime;
+        if(diff < 0) {
+          display.textContent = "00:00:00";
+          iconSpan.textContent = "";
+          warningDiv.textContent = "Hora futura inválida";
+          return;
+        }
         display.textContent = `${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))}`;
 
         if (diff >= minMs && diff < maxMs) {
@@ -276,22 +564,49 @@
       }, 1000);
     }
 
-    function markDead(bossName) {
+    // Marca muerte ahora con fecha actual ISO
+    function markDeadNow(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
       const nowISO = new Date().toISOString();
       database.ref("bosses/" + bossKey).set({ deathTime: nowISO });
+    }
+
+    // Marca muerte con hora ingresada, hoy o ayer si es futura la hora
+    function markDeadAtTime(bossName, hhmm) {
+      const bossKey = bossName.replace(/\s+/g, "-");
+      const [hh, mm] = hhmm.split(":").map(Number);
+      if (isNaN(hh) || isNaN(mm)) return alert("Formato inválido de hora.");
+
+      let now = new Date();
+      let deathTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+      if (deathTime > now) {
+        // Si la hora es mayor que la actual, restar un día para ponerlo ayer
+        deathTime.setDate(deathTime.getDate() - 1);
+      }
+
+      database.ref("bosses/" + bossKey).set({ deathTime: deathTime.toISOString() });
+    }
+
+    function resetTimerConfirm(bossName) {
+      if (confirm(`¿Seguro que querés resetear el timer de "${bossName}"? Esta acción no se puede deshacer.`)) {
+        resetTimer(bossName);
+      }
     }
 
     function resetTimer(bossName) {
       const bossKey = bossName.replace(/\s+/g, "-");
       clearInterval(timers[bossName]);
       delete timers[bossName];
-      document.getElementById(`${bossName}-time`).textContent = "00:00:00";
-      document.getElementById(`icon-${bossKey}`).textContent = "";
-      document.getElementById(`warning-${bossKey}`).textContent = "";
+      const display = document.getElementById(`${bossName}-time`);
+      const iconSpan = document.getElementById(`icon-${bossKey}`);
+      const warningDiv = document.getElementById(`warning-${bossKey}`);
+      if(display) display.textContent = "00:00:00";
+      if(iconSpan) iconSpan.textContent = "";
+      if(warningDiv) warningDiv.textContent = "";
       database.ref("bosses/" + bossKey).remove();
     }
 
+    // Login, registro y logout con Firebase
     function login() {
       const email = document.getElementById("email").value;
       const pass = document.getElementById("password").value;
@@ -322,29 +637,63 @@
     }
 
     auth.onAuthStateChanged(async user => {
-      document.getElementById("loader").style.display = "none";
       if (user) {
         const allowed = await checkAuthorization(user.uid);
         if (allowed) {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "none";
           logoutButton.style.display = "block";
+          toolsDiv.style.display = "flex";
+          themeToggleBtn.style.display = "inline-block";
           showTimers();
         } else {
           loginForm.style.display = "none";
           notAuthorizedDiv.style.display = "block";
           timersContainer.style.display = "none";
           logoutButton.style.display = "block";
+          toolsDiv.style.display = "none";
+          themeToggleBtn.style.display = "none";
         }
         clearMessage();
       } else {
-        loginForm.style.display = "block";
+        loginForm.style.display = "flex";
         notAuthorizedDiv.style.display = "none";
         timersContainer.style.display = "none";
         logoutButton.style.display = "none";
+        toolsDiv.style.display = "none";
+        themeToggleBtn.style.display = "none";
         clearMessage();
       }
     });
+
+    // Filtro búsqueda bosses
+    function filterBosses() {
+      showTimers(searchInput.value.trim());
+    }
+
+    // Sincronizar timers manual (simula actualizar todos los listeners)
+    function syncTimers() {
+      alert("Sincronizando timers...");
+      showTimers(searchInput.value.trim());
+    }
+
+    // Tema claro / oscuro con cambio de estilos
+    function toggleTheme() {
+      if(currentTheme === "dark") {
+        currentTheme = "light";
+        document.body.classList.remove("dark");
+        document.body.classList.add("light");
+        themeToggleBtn.textContent = "Cambiar a tema oscuro";
+      } else {
+        currentTheme = "dark";
+        document.body.classList.remove("light");
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "Cambiar a tema claro";
+      }
+    }
+
+    // Inicializar texto botón tema
+    themeToggleBtn.textContent = "Cambiar a tema claro";
   </script>
 </body>
 </html>
