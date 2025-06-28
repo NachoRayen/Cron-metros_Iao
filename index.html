@@ -4,827 +4,688 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cronómetro de Bosses - Imperium AO</title>
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet" />
+
   <style>
-    /* ==== Estilos Globales ==== */
+    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+    :root {
+      --gold: #D4AF37;
+      --blue: #004E8A;
+      --lightblue: #4FC3F7;
+      --darkblue: #002F4B;
+      --green: #4CAF50;
+      --red: #D32F2F;
+      --background-light: #F9F6F1;
+      --background-dark: #0D1B2A;
+      --text-light: #222;
+      --text-dark: #EEE;
+    }
+
     body {
       margin: 0;
-      padding: 2rem;
-      font-family: 'MedievalSharp', cursive;
-      background-color: #0a0f1a;
-      color: #d0e7ff;
+      font-family: 'MedievalSharp', cursive, serif;
+      background-color: var(--background-light);
+      color: var(--text-light);
+      background-image: url('imperium_logo_grande.png'); /* Coloca el logo en la misma carpeta */
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 400px auto;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      transition: background-color 0.5s, color 0.5s;
       min-height: 100vh;
+      align-items: center;
+      padding: 1rem;
     }
+
     body.dark {
-      background-color: #0a0f1a;
-      color: #d0e7ff;
-    }
-    body.light {
-      background-color: #fff;
-      color: #000;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      color: gold;
-      text-shadow: 0 0 10px #000;
-      margin-bottom: 1.5rem;
-      user-select: none;
+      background-color: var(--background-dark);
+      color: var(--text-dark);
+      background-image: url('imperium_logo_grande.png');
+      background-position: center;
+      background-size: 400px auto;
     }
 
-    /* ==== Login Form Mejorado ==== */
-    #login-form {
-      background: rgba(20, 30, 60, 0.9);
-      border: 3px solid gold;
-      border-radius: 15px;
-      padding: 2rem 2.5rem;
-      box-shadow: 0 0 20px gold;
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      user-select: none;
-      position: relative;
-    }
-
-    body.light #login-form {
-      background: #fefefe;
-      border-color: #daa520;
-      box-shadow: 0 0 15px #daa520;
-      color: #222;
-    }
-
-    #login-form input[type="email"],
-    #login-form input[type="password"] {
+    header {
       width: 100%;
-      padding: 0.7rem 1rem;
-      font-size: 1.1rem;
-      border: 2px solid #87cefa;
-      border-radius: 8px;
-      font-family: 'MedievalSharp', cursive;
-      background: #0a0f1a;
-      color: #d0e7ff;
-      transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-      user-select: text;
-    }
-
-    body.light #login-form input[type="email"],
-    body.light #login-form input[type="password"] {
-      background: #fff;
-      color: #222;
-      border-color: #6699cc;
-    }
-
-    #login-form input[type="email"]::placeholder,
-    #login-form input[type="password"]::placeholder {
-      color: #a0c8ff;
-    }
-
-    body.light #login-form input[type="email"]::placeholder,
-    body.light #login-form input[type="password"]::placeholder {
-      color: #667799;
-    }
-
-    #login-form input[type="email"]:focus,
-    #login-form input[type="password"]:focus {
-      border-color: gold;
-      outline: none;
-      background-color: #112244;
-      color: #ffd700;
-    }
-
-    body.light #login-form input[type="email"]:focus,
-    body.light #login-form input[type="password"]:focus {
-      background-color: #fffbdd;
-      color: #aa7700;
-    }
-
-    #login-form button {
-      width: 100%;
-      background: #003366;
-      color: #d0e7ff;
-      border: 3px solid gold;
-      padding: 0.8rem 1rem;
-      font-size: 1.15rem;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s, color 0.3s, transform 0.1s;
-      user-select: none;
-    }
-
-    #login-form button:hover {
-      background-color: gold;
-      color: #003366;
-      transform: scale(1.05);
-    }
-
-    body.light #login-form button {
-      background: #f0e68c;
-      color: #003366;
-      border-color: #daa520;
-    }
-
-    body.light #login-form button:hover {
-      background-color: #daa520;
-      color: #fff;
-    }
-
-    #message {
-      color: #ff6961;
-      font-weight: bold;
-      min-height: 1.4em;
+      max-width: 900px;
+      margin-bottom: 1rem;
       text-align: center;
-      user-select: none;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 0.5rem;
+      font-size: 2rem;
+      color: var(--gold);
+      text-shadow: 1px 1px 2px #0008;
     }
 
-    /* ==== Pantalla de carga ==== */
-    #loading-screen {
-      position: absolute;
-      inset: 0;
-      background: rgba(10, 10, 10, 0.8);
-      color: gold;
-      font-family: 'MedievalSharp', cursive;
-      font-size: 1.6rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-      border-radius: 15px;
-      z-index: 10;
-      display: none;
-    }
-
-    /* Ajustes logout button */
-    #logout {
-      margin-top: 1rem;
-      background: darkred;
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
+    #loginForm, #logoutSection {
+      max-width: 400px;
+      background: var(--lightblue);
+      padding: 1rem;
       border-radius: 8px;
+      box-shadow: 0 0 10px #0003;
+      margin-bottom: 1rem;
+      color: var(--darkblue);
+      font-weight: bold;
+    }
+
+    #loginForm.dark, #logoutSection.dark {
+      background: #033963cc;
+      color: var(--lightblue);
+      box-shadow: 0 0 15px #4fc3f7cc;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin: 0.5rem 0 1rem 0;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      font-size: 1rem;
+      font-family: 'MedievalSharp', cursive;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--lightblue);
+      outline: none;
+    }
+
+    button {
+      background-color: var(--gold);
+      border: none;
+      color: #111;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
       cursor: pointer;
       font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 0 5px #d4af3777;
       user-select: none;
     }
 
-    #logout:hover {
-      background: red;
+    button:hover {
+      background-color: #b38f22;
+      box-shadow: 0 0 10px #d4af37cc;
     }
 
-    /* ==== Timer container ==== */
+    #themeToggleBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 100;
+    }
+
+    #filterBossesBtn {
+      margin-bottom: 1rem;
+    }
+
+    #searchInput {
+      width: 250px;
+      padding: 6px 8px;
+      margin-right: 1rem;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1rem;
+      border: 2px solid var(--gold);
+      border-radius: 5px;
+    }
+
     .timer-container {
-      display: none;
+      display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 1.5rem;
-      margin-top: 2rem;
-      max-width: 960px;
+      max-width: 900px;
+      gap: 1rem;
+      width: 100%;
     }
 
     .timer {
-      background: rgba(10, 20, 40, 0.85);
-      border: 2px solid gold;
-      border-radius: 12px;
+      background-color: var(--darkblue);
+      color: var(--text-dark);
+      border-radius: 10px;
       padding: 1rem;
-      width: 270px;
-      text-align: center;
-      box-shadow: 0 0 15px #000;
+      width: 260px;
       display: flex;
       flex-direction: column;
-      user-select: none;
-      transition: background-color 0.5s, border-color 0.5s;
-      position: relative;
       align-items: center;
+      border: 3px solid var(--gold);
+      box-shadow: 0 0 10px #0009;
+      position: relative;
+      font-size: 1.1rem;
     }
 
-    body.light .timer {
-      background: #f9f9f9cc;
-      border-color: #daa520;
-      color: #222;
-      box-shadow: 0 0 12px #daa520;
+    body.dark .timer {
+      background-color: var(--blue);
+      color: var(--gold);
+      border-color: var(--lightblue);
+      box-shadow: 0 0 15px var(--lightblue);
     }
 
-    /* Estados colores */
     .timer.beforeSpawn {
-      background-color: #001f3f !important; /* azul oscuro */
-      border-color: #003366 !important;
-    }
-    body.light .timer.beforeSpawn {
-      background-color: #d0e7ff !important;
-      border-color: #336699 !important;
-      color: #003366 !important;
+      background-color: var(--darkblue);
+      border-color: var(--blue);
+      color: var(--lightblue);
+      animation: none;
     }
 
     .timer.canSpawn {
-      background-color: #3f9fff !important; /* celeste */
-      border-color: #4fc3f7 !important;
-    }
-    body.light .timer.canSpawn {
-      background-color: #bde7ff !important;
-      border-color: #3399cc !important;
-      color: #005577 !important;
+      background-color: var(--lightblue);
+      border-color: var(--gold);
+      color: var(--darkblue);
+      animation: pulseFire 1.5s infinite alternate;
     }
 
     .timer.spawned {
-      background-color: #30501a !important; /* verde */
-      border-color: #a0d468 !important;
-      color: #d0f0a1 !important;
+      background-color: var(--red);
+      border-color: var(--gold);
+      color: var(--background-light);
+      animation: pulseWarning 1.5s infinite alternate;
     }
-    body.light .timer.spawned {
-      background-color: #d9f0c1 !important;
-      border-color: #669933 !important;
-      color: #336600 !important;
+
+    .timer.spawnedActive {
+      background-color: var(--green);
+      border-color: var(--gold);
+      color: var(--background-light);
+      animation: none;
+    }
+
+    @keyframes pulseFire {
+      0% { box-shadow: 0 0 15px 5px #ff4500cc; }
+      100% { box-shadow: 0 0 25px 10px #ffae0088; }
+    }
+
+    @keyframes pulseWarning {
+      0% { box-shadow: 0 0 15px 5px #ffcc00cc; }
+      100% { box-shadow: 0 0 25px 10px #ffcc0099; }
     }
 
     .timer h2 {
-      margin-bottom: 0.3rem;
-      color: #87cefa;
-      user-select: text;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    body.light .timer h2 {
-      color: #336699;
-    }
-
-    .respawn-time {
-      font-size: 0.95rem;
-      color: #ccc;
-      margin-bottom: 0.5rem;
-      user-select: text;
-    }
-
-    body.light .respawn-time {
-      color: #555;
-    }
-
-    .timer-time {
-      font-size: 1.4rem;
-      font-weight: bold;
-      margin-bottom: 0.7rem;
-      user-select: text;
-      font-family: monospace;
-    }
-
-    .controls {
-      margin-top: auto;
-      display: flex;
-      justify-content: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .controls button {
-      background: #003366;
-      color: #d0e7ff;
-      border: 2px solid #87cefa;
-      border-radius: 6px;
-      padding: 0.4rem 0.8rem;
-      font-weight: bold;
-      font-family: 'MedievalSharp', cursive;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.1s;
-      user-select: none;
-      min-width: 90px;
-    }
-
-    .controls button:hover {
-      background: #0055aa;
-      transform: scale(1.05);
-    }
-
-    body.light .controls button {
-      background: #f0e68c;
-      color: #003366;
-      border-color: #daa520;
-    }
-
-    body.light .controls button:hover {
-      background: #daa520;
-      color: #fff;
-    }
-
-    .warning {
-      margin-top: 0.5rem;
-      color: #ffae00;
-      font-weight: bold;
-      min-height: 1.2em;
-      user-select: text;
-    }
-
-    /* ==== Ícono parpadeante ==== */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+      gap: 0.5rem;
     }
 
     .timer-icon {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      animation: blink 1.5s infinite;
-    }
-
-    .beforeSpawn .timer-icon {
-      background-color: #003366; /* azul oscuro */
+      font-size: 1.6rem;
+      animation: none;
+      user-select: none;
     }
 
     .canSpawn .timer-icon {
-      background-color: #4fc3f7; /* celeste */
+      animation: flameBlink 1.5s infinite alternate;
+      color: #ff4500;
     }
 
     .spawned .timer-icon {
-      background-color: #4caf50; /* verde */
+      animation: warningBlink 1.5s infinite alternate;
+      color: #ffcc00;
     }
 
-    /* ==== Herramientas usuario ==== */
-    #tools {
-      margin-top: 1rem;
-      width: 320px;
+    @keyframes flameBlink {
+      0% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    @keyframes warningBlink {
+      0% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    .respawn-time {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .timer-time {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+
+    .input-group {
       display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      user-select: none;
-    }
-
-    #tools input[type="text"] {
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      border: 2px solid #87cefa;
-      font-family: 'MedievalSharp', cursive;
-      font-size: 1rem;
       width: 100%;
-      box-sizing: border-box;
-      background: #0a0f1a;
-      color: #d0e7ff;
-      transition: border-color 0.3s;
+      gap: 0.5rem;
+      justify-content: center;
     }
 
-    body.light #tools input[type="text"] {
-      background: #fff;
-      color: #222;
-      border-color: #6699cc;
-    }
-
-    #tools button {
-      background: #003366;
-      color: #d0e7ff;
-      border: 2px solid #87cefa;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      transition: background-color 0.3s, transform 0.1s;
-    }
-
-    #tools button:hover {
-      background: #0055aa;
-      transform: scale(1.05);
-    }
-
-    body.light #tools button {
-      background: #f0e68c;
-      color: #003366;
-      border-color: #daa520;
-    }
-
-    body.light #tools button:hover {
-      background: #daa520;
-      color: #fff;
-    }
-
-    /* ==== Tema Claro / Oscuro ==== */
-    #themeToggle {
-      margin-top: 2rem;
-      padding: 0.5rem 1rem;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 8px;
-      border: 2px solid gold;
-      background: #003366;
-      color: #d0e7ff;
-      user-select: none;
-      transition: background-color 0.3s, color 0.3s;
-      align-self: center;
-    }
-
-    #themeToggle:hover {
-      background: gold;
-      color: #003366;
-    }
-
-    body.light #themeToggle {
-      background: #f0e68c;
-      color: #003366;
-      border-color: #daa520;
-    }
-
-    body.light #themeToggle:hover {
-      background: #daa520;
-      color: #fff;
-    }
-
-    /* ==== Input hora para \"murió\" ==== */
     .death-time-input {
-      margin-top: 0.6rem;
-      width: 70%;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-      border: 2px solid #87cefa;
-      font-family: monospace;
+      flex-grow: 1;
+      padding: 6px;
+      border-radius: 4px;
+      border: 2px solid var(--gold);
+      font-family: 'MedievalSharp', cursive;
+      font-weight: 600;
       font-size: 1rem;
       text-align: center;
-      user-select: text;
-      background: #0a0f1a;
-      color: #d0e7ff;
-      transition: border-color 0.3s;
     }
 
-    body.light .death-time-input {
-      background: #fff;
-      color: #222;
-      border-color: #6699cc;
-    }
-
-    /* Botón \"Murió recién\" */
     .btn-murio {
-      margin-top: 0.6rem;
-      padding: 0.3rem 0.6rem;
+      background-color: var(--gold);
+      color: var(--darkblue);
+      font-weight: 700;
+      border: none;
       border-radius: 6px;
-      border: 2px solid #87cefa;
-      background: #003366;
-      color: #d0e7ff;
-      font-family: 'MedievalSharp', cursive;
-      font-weight: bold;
-      font-size: 0.9rem;
       cursor: pointer;
+      padding: 6px 10px;
       user-select: none;
-      transition: background-color 0.3s, transform 0.1s;
-      width: 25%;
+      transition: background-color 0.3s ease;
     }
 
     .btn-murio:hover {
-      background: #0055aa;
-      transform: scale(1.05);
+      background-color: #b38f22;
     }
 
-    body.light .btn-murio {
-      background: #f0e68c;
-      color: #003366;
-      border-color: #daa520;
+    /* Scroll barra para timer container si es necesario */
+    .timer-container {
+      max-height: 75vh;
+      overflow-y: auto;
     }
 
-    body.light .btn-murio:hover {
-      background: #daa520;
-      color: #fff;
-    }
-
-    /* Contenedor para input + botón */
-    .input-group {
-      display: flex;
-      justify-content: center;
-      gap: 0.3rem;
-      margin-bottom: 0.5rem;
-      user-select: none;
-    }
   </style>
 </head>
-<body class="dark">
-  <h1>Cronómetro de Bosses - Imperium AO</h1>
+<body>
 
-  <div id="login-form">
-    <input type="email" id="email" placeholder="Email" autocomplete="username" />
-    <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
-    <button onclick="login()">Iniciar sesión</button>
-    <button onclick="register()">Registrarse</button>
-    <div id="loading-screen">Cargando...</div>
-    <div class="message" id="message"></div>
+  <header>Cronómetro de Bosses - Imperium AO</header>
+
+  <button id="themeToggleBtn" onclick="toggleTheme()">Cambiar Tema</button>
+
+  <div id="loginForm">
+    <h3>Iniciar Sesión / Registrarse</h3>
+    <input type="email" id="emailInput" placeholder="Correo electrónico" />
+    <input type="password" id="passwordInput" placeholder="Contraseña" />
+    <button id="loginBtn">Ingresar</button>
+    <button id="registerBtn">Registrarse</button>
+    <p id="loginMessage" style="color:red; font-weight:bold;"></p>
   </div>
 
-  <div id="not-authorized" style="display: none;">
-    No estás autorizado. Esperá a que se te apruebe el acceso.
+  <div id="logoutSection" style="display:none;">
+    <p>Sesión iniciada como: <span id="userEmail"></span></p>
+    <button id="logoutBtn">Cerrar Sesión</button>
   </div>
 
-  <button id="logout" style="display: none;" onclick="logout()">Cerrar sesión</button>
-
-  <!-- Herramientas usuario: Buscar, filtrar -->
-  <div id="tools" style="display:none;">
-    <input type="text" id="searchInput" placeholder="Buscar boss..." oninput="filterBosses()" />
+  <div style="margin-bottom:1rem; max-width: 900px;">
+    <input type="text" id="searchInput" placeholder="Buscar Boss..." />
+    <button id="filterBossesBtn">Mostrar sólo bosses que pueden spawnear</button>
   </div>
 
-  <button id="themeToggle" style="display:none;" onclick="toggleTheme()">Cambiar a tema claro</button>
+  <div class="timer-container" id="timerContainer"></div>
 
-  <div class="timer-container" id="timers"></div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-  <!-- Audios para sonidos -->
-  <audio id="soundSpawn" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
-  <audio id="soundSpawned" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+  <script>
 <script>
-  // Datos de bosses ejemplo (puedes agregar o modificar)
-const bosses = [
-  { id: "rey-dragon", name: "Rey Dragón", respawnMin: 22 * 60, respawnMax: 30 * 60 },
-  { id: "dragon-legendario", name: "Dragón Legendario", respawnMin: 16 * 60, respawnMax: 24 * 60 },
-  { id: "gran-dragon-negro", name: "Gran Dragón Negro", respawnMin: 12 * 60, respawnMax: 20 * 60 },
-  { id: "gran-dragon-rojo", name: "Gran Dragón Rojo", respawnMin: 12 * 60, respawnMax: 20 * 60 },
-  { id: "archimago-abisal", name: "Archimago Abisal", respawnMin: 9 * 60, respawnMax: 18 * 60 },
-  { id: "gran-dragon-azul", name: "Gran Dragón Azul", respawnMin: 8 * 60, respawnMax: 14 * 60 },
-  { id: "eishner", name: "Eishner", respawnMin: 9 * 60, respawnMax: 18 * 60 },
-  { id: "gran-dragon-verde", name: "Gran Dragón Verde", respawnMin: 2 * 60, respawnMax: 5 * 60 },
-  { id: "djinn", name: "Djinn", respawnMin: 7 * 60, respawnMax: 15 * 60 },
-  { id: "lilith", name: "Lilith", respawnMin: 2 * 60, respawnMax: 3 * 60 + 30 },
-  { id: "abyssaria", name: "Abyssaria", respawnMin: 3 * 60 + 30, respawnMax: 9 * 60 },
-  { id: "garveloth", name: "Garveloth", respawnMin: 30, respawnMax: 45 },
-  { id: "vampiro-transformado", name: "Vampiro Transformado", respawnMin: 30, respawnMax: 45 },
-];
+  // Configurá tus credenciales de Firebase
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-    {
-      id: 'boss1',
-      name: 'Gorgona',
-      respawnMin: 30, // minutos
-      respawnMax: 45, // minutos
-    },
-    {
-      id: 'boss2',
-      name: 'Vampiro Transformado',
-      respawnMin: 60,
-      respawnMax: 90,
-    },
-    {
-      id: 'boss3',
-      name: 'Garveloth',
-      respawnMin: 120,
-      respawnMax: 180,
-    },
-  ];
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAizvPiX4f2hk4KFxD0J9Hm7hdfoNXz60Y",
+  authDomain: "cronometroiao.firebaseapp.com",
+  databaseURL: "https://cronometroiao-default-rtdb.firebaseio.com",
+  projectId: "cronometroiao",
+  storageBucket: "cronometroiao.firebasestorage.app",
+  messagingSenderId: "906013460712",
+  appId: "1:906013460712:web:fdf87311000fc2288e615d",
+  measurementId: "G-K923BGRD3K"
+};
 
-  // Estado general
-  let timers = {};
-  let timerInterval = null;
-  let theme = localStorage.getItem('theme') || 'dark';
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-  document.body.className = theme;
-  document.getElementById('themeToggle').textContent = theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+  // Inicialización Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 
-  // Formatear tiempo a "mm min" o "Xh Y min"
+  // Bosses con tiempos mínimos y máximos (min y max respawn en minutos)
+ const bosses = [
+      { name: "Rey Dragón", minDelay: 22 * 3600 * 1000, maxDelay: 30 * 3600 * 1000 },
+      { name: "Dragón Legendario", minDelay: 16 * 3600 * 1000, maxDelay: 24 * 3600 * 1000 },
+      { name: "Gran Dragón Negro", minDelay: 12 * 3600 * 1000, maxDelay: 20 * 3600 * 1000 },
+      { name: "Gran Dragón Rojo", minDelay: 12 * 3600 * 1000, maxDelay: 20 * 3600 * 1000 },
+      { name: "Archimago Abisal", minDelay: 9 * 3600 * 1000, maxDelay: 18 * 3600 * 1000 },
+      { name: "Gran Dragón Azul", minDelay: 8 * 3600 * 1000, maxDelay: 14 * 3600 * 1000 },
+      { name: "Eishner", minDelay: 9 * 3600 * 1000, maxDelay: 18 * 3600 * 1000 },
+      { name: "Gran Dragón Verde", minDelay: 2 * 3600 * 1000, maxDelay: 5 * 3600 * 1000 },
+      { name: "Djinn", minDelay: 7 * 3600 * 1000, maxDelay: 15 * 3600 * 1000 },
+      { name: "Lilith", minDelay: (2 * 3600 + 30 * 60) * 1000, maxDelay: (3 * 3600 + 30 * 60) * 1000 },
+      { name: "Abyssaria", minDelay: (3 * 3600 + 30 * 60) * 1000, maxDelay: 9 * 3600 * 1000 },
+      { name: "Garveloth", minDelay: 30 * 60 * 1000, maxDelay: 45 * 60 * 1000 },
+      { name: "Vampiro Transformado", minDelay: 30 * 60 * 1000, maxDelay: 45 * 60 * 1000 },
+      { name: "Gorgona", minDelay: (16 * 60 + 40) * 1000, maxDelay: (61 * 60) * 1000 }
+    ];
+
+  // Variables y elementos DOM
+  const timerContainer = document.getElementById('timerContainer');
+  const loginForm = document.getElementById('loginForm');
+  const logoutSection = document.getElementById('logoutSection');
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userEmailSpan = document.getElementById('userEmail');
+  const loginMessage = document.getElementById('loginMessage');
+  const filterBossesBtn = document.getElementById('filterBossesBtn');
+  const searchInput = document.getElementById('searchInput');
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+  let currentUser = null;
+  let showOnlyCanSpawn = false;
+
+  // Guardar tiempos en localStorage por usuario
+  function getStorageKey() {
+    return currentUser ? `bossTimers_${currentUser.uid}` : null;
+  }
+
+  function loadTimers() {
+    if (!currentUser) return {};
+    const key = getStorageKey();
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return {};
+      }
+    }
+    return {};
+  }
+
+  function saveTimers(timers) {
+    if (!currentUser) return;
+    const key = getStorageKey();
+    localStorage.setItem(key, JSON.stringify(timers));
+  }
+
+  // Crear los elementos del cronómetro para cada boss
+  function createTimerElement(boss, deathTimeStr = '') {
+    const timerDiv = document.createElement('div');
+    timerDiv.classList.add('timer');
+    timerDiv.id = `timer-${boss.id}`;
+
+    const title = document.createElement('h2');
+    title.textContent = boss.name;
+
+    const iconSpan = document.createElement('span');
+    iconSpan.classList.add('timer-icon');
+    title.prepend(iconSpan);
+
+    const respawnTimeText = document.createElement('div');
+    respawnTimeText.classList.add('respawn-time');
+    respawnTimeText.textContent = `${formatMinutes(boss.minRespawn)} a ${formatMinutes(boss.maxRespawn)}`;
+
+    const timerTime = document.createElement('div');
+    timerTime.classList.add('timer-time');
+    timerTime.textContent = '--:--';
+
+    // Input para la hora de muerte (solo HH:MM)
+    const inputGroup = document.createElement('div');
+    inputGroup.classList.add('input-group');
+
+    const deathInput = document.createElement('input');
+    deathInput.type = 'text';
+    deathInput.placeholder = 'Hora muerte (HH:MM)';
+    deathInput.classList.add('death-time-input');
+    deathInput.maxLength = 5;
+    deathInput.value = deathTimeStr;
+
+    const btnMurio = document.createElement('button');
+    btnMurio.textContent = 'Murió';
+    btnMurio.classList.add('btn-murio');
+
+    btnMurio.addEventListener('click', () => {
+      if (!validateTimeFormat(deathInput.value)) {
+        alert('Ingrese una hora válida en formato HH:MM');
+        return;
+      }
+      saveBossDeathTime(boss.id, deathInput.value);
+      updateTimers();
+    });
+
+    inputGroup.appendChild(deathInput);
+    inputGroup.appendChild(btnMurio);
+
+    timerDiv.appendChild(title);
+    timerDiv.appendChild(respawnTimeText);
+    timerDiv.appendChild(timerTime);
+    timerDiv.appendChild(inputGroup);
+
+    return timerDiv;
+  }
+
+  // Formato para minutos: si >= 60 mostrar en horas
   function formatMinutes(mins) {
     if (mins < 60) return `${mins} min`;
-    const h = Math.floor(mins / 60);
-    const m = mins % 60;
-    return m === 0 ? `${h}h` : `${h}h ${m} min`;
+    else {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return m === 0 ? `${h} h` : `${h} h ${m} min`;
+    }
   }
 
-  // Función para guardar el tiempo de muerte (hora) de un boss
-  function saveDeathTime(bossId, deathTimeISO) {
-    timers[bossId] = deathTimeISO;
-    localStorage.setItem('timers', JSON.stringify(timers));
+  // Validar formato HH:MM 24h
+  function validateTimeFormat(str) {
+    return /^\d{2}:\d{2}$/.test(str) && 
+      Number(str.slice(0, 2)) < 24 && 
+      Number(str.slice(3)) < 60;
   }
 
-  // Cargar timers guardados
-  function loadTimers() {
-    const saved = localStorage.getItem('timers');
-    timers = saved ? JSON.parse(saved) : {};
+  // Guardar tiempo de muerte de un boss
+  function saveBossDeathTime(bossId, timeStr) {
+    const timers = loadTimers();
+    timers[bossId] = timeStr;
+    saveTimers(timers);
   }
 
-  // Renderizar todos los timers
-  function renderTimers() {
-    const container = document.getElementById('timers');
-    container.innerHTML = '';
+  // Obtener Date del último kill basado en la hora ingresada (hoy o ayer)
+  function getDeathDate(timeStr) {
+    if (!validateTimeFormat(timeStr)) return null;
+    const now = new Date();
+    const [h, m] = timeStr.split(':').map(Number);
+    let deathDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+    // Si la hora es mayor a la actual, asumimos que fue ayer
+    if (deathDate > now) {
+      deathDate.setDate(deathDate.getDate() - 1);
+    }
+    return deathDate;
+  }
 
-    bosses.forEach(boss => {
-      const deathTimeISO = timers[boss.id];
-      const timerEl = document.createElement('div');
-      timerEl.className = 'timer beforeSpawn';
-      timerEl.id = `timer-${boss.id}`;
+  // Calcular estado y tiempo restante para cada boss
+  // Devuelve objeto con: status (beforeSpawn, canSpawn, spawned), timeLeftMin, icon, className
+  function calcBossStatus(boss, deathTimeStr) {
+    const deathDate = getDeathDate(deathTimeStr);
+    if (!deathDate) {
+      return { status: 'noDeath', timeLeftMin: null, icon: '', className: 'beforeSpawn' };
+    }
+    const now = new Date();
+    const elapsedMin = (now - deathDate) / 60000;
 
-      // Nombre boss + icono
-      const title = document.createElement('h2');
-      title.textContent = boss.name;
+    if (elapsedMin < boss.minRespawn) {
+      return { status: 'beforeSpawn', timeLeftMin: boss.minRespawn - elapsedMin, icon: '', className: 'beforeSpawn' };
+    }
+    if (elapsedMin >= boss.minRespawn && elapsedMin <= boss.maxRespawn) {
+      return { status: 'canSpawn', timeLeftMin: boss.maxRespawn - elapsedMin, icon: '🔥', className: 'canSpawn' };
+    }
+    if (elapsedMin > boss.maxRespawn) {
+      return { status: 'spawned', timeLeftMin: 0, icon: '⚠️', className: 'spawned' };
+    }
+  }
 
-      // Input hora muerte + botón "Murió recién"
-      const inputGroup = document.createElement('div');
-      inputGroup.className = 'input-group';
-
-      const inputHour = document.createElement('input');
-      inputHour.type = 'time';
-      inputHour.className = 'death-time-input';
-      inputHour.title = 'Hora a la que murió el boss';
-      inputHour.value = deathTimeISO ? new Date(deathTimeISO).toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'}) : '';
-
-      // Actualizar tiempo al cambiar input
-      inputHour.onchange = () => {
-        const now = new Date();
-        const [h, m] = inputHour.value.split(':').map(Number);
-        if (isNaN(h) || isNaN(m)) return;
-
-        // Construimos fecha ISO con la hora puesta, asumiendo hoy o ayer si hora es mayor a la actual
-        let deathDate = new Date(now);
-        deathDate.setHours(h, m, 0, 0);
-
-        if (deathDate > now) {
-          // Si la hora es mayor a la actual, asumo que es del día anterior
-          deathDate.setDate(deathDate.getDate() - 1);
-        }
-
-        saveDeathTime(boss.id, deathDate.toISOString());
-        updateAllTimers();
-      };
-
-      const btnMurioRecien = document.createElement('button');
-      btnMurioRecien.textContent = 'Murió recién';
-      btnMurioRecien.className = 'btn-murio';
-      btnMurioRecien.title = 'Poner hora actual';
-      btnMurioRecien.onclick = () => {
-        const now = new Date();
-        saveDeathTime(boss.id, now.toISOString());
-        inputHour.value = now.toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
-        updateAllTimers();
-      };
-
-      inputGroup.appendChild(inputHour);
-      inputGroup.appendChild(btnMurioRecien);
-
-      // Mostrar ventana respawn
-      const respawnTime = document.createElement('div');
-      respawnTime.className = 'respawn-time';
-      respawnTime.textContent = `Respawn: ${formatMinutes(boss.respawnMin)} a ${formatMinutes(boss.respawnMax)}`;
-
-      // Tiempo restante / crono
-      const timerTime = document.createElement('div');
-      timerTime.className = 'timer-time';
-      timerTime.textContent = '--:--';
-
-      // Icono 🔥⚠️ según estado
-      const timerIcon = document.createElement('span');
-      timerIcon.className = 'timer-icon';
-      timerIcon.style.marginLeft = '6px';
-
-      // Estado para controlar colores y texto
-      let state = 'beforeSpawn'; // beforeSpawn, canSpawn, spawned
-
-      // Función para actualizar timer y estado
-      function updateTimer() {
-        if (!timers[boss.id]) {
-          timerTime.textContent = '--:--';
-          timerEl.className = 'timer beforeSpawn';
-          timerIcon.style.display = 'none';
-          return;
-        }
-        const now = new Date();
-        const deathTime = new Date(timers[boss.id]);
-        const diffMs = now - deathTime;
-        const diffMins = Math.floor(diffMs / 60000);
-
-        if (diffMins < 0) {
-          // Si la hora puesta es futura (error), resetear
-          timerTime.textContent = '--:--';
-          timerEl.className = 'timer beforeSpawn';
-          timerIcon.style.display = 'none';
-          return;
-        }
-
-        if (diffMins < boss.respawnMin) {
-          // Antes del mínimo spawn
-          state = 'beforeSpawn';
-          const remaining = boss.respawnMin - diffMins;
-          timerTime.textContent = `Spawn en ${formatMinutes(remaining)}`;
-          timerIcon.style.display = 'none';
-          timerEl.className = 'timer beforeSpawn';
-        } else if (diffMins >= boss.respawnMin && diffMins <= boss.respawnMax) {
-          // Dentro ventana spawn
-          state = 'canSpawn';
-          const remaining = boss.respawnMax - diffMins;
-          timerTime.textContent = `Spawn posible (${formatMinutes(remaining)} restantes) 🔥`;
-          timerIcon.style.display = 'inline-block';
-          timerIcon.style.backgroundColor = '#ff6600'; // naranja
-          timerIcon.style.animation = 'blink 1.5s infinite';
-          timerEl.className = 'timer canSpawn';
-        } else {
-          // Pasó ventana spawn
-          state = 'spawned';
-          timerTime.textContent = 'Spawn confirmado ⚠️';
-          timerIcon.style.display = 'inline-block';
-          timerIcon.style.backgroundColor = '#ff0000'; // rojo
-          timerIcon.style.animation = 'blink 1.5s infinite';
-          timerEl.className = 'timer spawned';
-        }
-      }
-
-      // Actualizar al cargar
-      updateTimer();
-
-      // Guardar función para actualización periódica
-      timerEl.updateTimer = updateTimer;
-
-      // Agregar todos los elementos al timer
-      title.appendChild(timerIcon);
-      timerEl.appendChild(title);
-      timerEl.appendChild(inputGroup);
-      timerEl.appendChild(respawnTime);
-      timerEl.appendChild(timerTime);
-
-      container.appendChild(timerEl);
-    });
+  // Formatear tiempo mm:ss o hh:mm si es mayor a 60 min
+  function formatTimeLeft(minLeft) {
+    if (minLeft === null || minLeft < 0) return '--:--';
+    if (minLeft >= 60) {
+      const h = Math.floor(minLeft / 60);
+      const m = Math.floor(minLeft % 60);
+      return `${h}h ${m}m`;
+    } else {
+      const m = Math.floor(minLeft);
+      const s = Math.floor((minLeft - m) * 60);
+      return `${m}m ${s}s`;
+    }
   }
 
   // Actualizar todos los timers
-  function updateAllTimers() {
+  function updateTimers() {
+    const timers = loadTimers();
     bosses.forEach(boss => {
-      const el = document.getElementById(`timer-${boss.id}`);
-      if (el && el.updateTimer) el.updateTimer();
-    });
-  }
+      const timerDiv = document.getElementById(`timer-${boss.id}`);
+      if (!timerDiv) return;
+      const deathTimeStr = timers[boss.id] || '';
+      const status = calcBossStatus(boss, deathTimeStr);
+      const iconSpan = timerDiv.querySelector('.timer-icon');
+      const timerTime = timerDiv.querySelector('.timer-time');
 
-  // Filtrar bosses por nombre
-  function filterBosses() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    bosses.forEach(boss => {
-      const el = document.getElementById(`timer-${boss.id}`);
-      if (!el) return;
-      if (boss.name.toLowerCase().includes(query)) {
-        el.style.display = 'flex';
+      // Actualizar clases para estilos y animaciones
+      timerDiv.classList.remove('beforeSpawn', 'canSpawn', 'spawned');
+      timerDiv.classList.add(status.className);
+
+      // Iconos 🔥 y ⚠️
+      iconSpan.textContent = status.icon;
+
+      // Mostrar tiempo restante
+      if (status.status === 'beforeSpawn') {
+        timerTime.textContent = `Faltan ${formatTimeLeft(status.timeLeftMin)}`;
+      } else if (status.status === 'canSpawn') {
+        timerTime.textContent = `Ventana de respawn: ${formatTimeLeft(status.timeLeftMin)}`;
+      } else if (status.status === 'spawned') {
+        timerTime.textContent = 'Boss spawneado!';
       } else {
-        el.style.display = 'none';
+        timerTime.textContent = '--:--';
       }
     });
   }
 
-  // Alternar tema
-  function toggleTheme() {
-    if (theme === 'dark') {
-      theme = 'light';
-      document.body.className = 'light';
-      document.getElementById('themeToggle').textContent = 'Cambiar a tema oscuro';
-    } else {
-      theme = 'dark';
-      document.body.className = 'dark';
-      document.getElementById('themeToggle').textContent = 'Cambiar a tema claro';
-    }
-    localStorage.setItem('theme', theme);
+  // Renderizar todo
+  function renderTimers() {
+    timerContainer.innerHTML = '';
+    const timers = loadTimers();
+
+    const filterText = searchInput.value.toLowerCase();
+
+    bosses.forEach(boss => {
+      // Si hay filtro texto y no coincide el nombre, lo saltamos
+      if (filterText && !boss.name.toLowerCase().includes(filterText)) return;
+
+      // Filtro para mostrar sólo bosses que pueden spawnear (están en ventana o pasaron máximo)
+      if (showOnlyCanSpawn) {
+        const status = calcBossStatus(boss, timers[boss.id] || '');
+        if (status.status === 'beforeSpawn' || status.status === 'noDeath') return;
+      }
+
+      const deathTimeStr = timers[boss.id] || '';
+      const timerEl = createTimerElement(boss, deathTimeStr);
+      timerContainer.appendChild(timerEl);
+    });
+
+    updateTimers();
   }
 
-  // Simulación simple login/logout (reemplazar con Firebase)
-  function login() {
-    const email = document.getElementById('email').value.trim();
-    const pass = document.getElementById('password').value.trim();
+  // Eventos login y registro
+  loginBtn.addEventListener('click', () => {
+    loginMessage.textContent = '';
+    const email = emailInput.value.trim();
+    const pass = passwordInput.value.trim();
     if (!email || !pass) {
-      alert('Ingrese email y contraseña');
+      loginMessage.textContent = 'Por favor, ingresa email y contraseña.';
       return;
     }
-    // Simular login
-    localStorage.setItem('userEmail', email);
-    onLoginSuccess();
-  }
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(cred => {
+        emailInput.value = '';
+        passwordInput.value = '';
+        loginMessage.textContent = '';
+      })
+      .catch(e => {
+        loginMessage.textContent = 'Error al iniciar sesión: ' + e.message;
+      });
+  });
 
-  function register() {
-    alert('Funcionalidad de registro no implementada aquí.');
-  }
+  registerBtn.addEventListener('click', () => {
+    loginMessage.textContent = '';
+    const email = emailInput.value.trim();
+    const pass = passwordInput.value.trim();
+    if (!email || !pass) {
+      loginMessage.textContent = 'Por favor, ingresa email y contraseña.';
+      return;
+    }
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(cred => {
+        emailInput.value = '';
+        passwordInput.value = '';
+        loginMessage.textContent = 'Usuario registrado y logueado.';
+      })
+      .catch(e => {
+        loginMessage.textContent = 'Error al registrar: ' + e.message;
+      });
+  });
 
-  function logout() {
-    localStorage.removeItem('userEmail');
-    location.reload();
-  }
+  logoutBtn.addEventListener('click', () => {
+    auth.signOut();
+  });
 
-  function onLoginSuccess() {
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('logout').style.display = 'inline-block';
-    document.getElementById('tools').style.display = 'flex';
-    document.getElementById('themeToggle').style.display = 'inline-block';
-    document.getElementById('timers').style.display = 'flex';
-
-    loadTimers();
-    renderTimers();
-
-    timerInterval = setInterval(updateAllTimers, 10000); // actualiza cada 10s
-  }
-
-  // Al cargar la página, check login
-  window.onload = () => {
-    const userEmail = localStorage.getItem('userEmail');
-    if (userEmail) {
-      onLoginSuccess();
+  // Listener de estado de usuario
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if (user) {
+      loginForm.style.display = 'none';
+      logoutSection.style.display = 'block';
+      userEmailSpan.textContent = user.email;
+      renderTimers();
     } else {
-      document.getElementById('login-form').style.display = 'flex';
-      document.getElementById('logout').style.display = 'none';
-      document.getElementById('tools').style.display = 'none';
-      document.getElementById('themeToggle').style.display = 'none';
-      document.getElementById('timers').style.display = 'none';
+      loginForm.style.display = 'block';
+      logoutSection.style.display = 'none';
+      timerContainer.innerHTML = '<p>Iniciá sesión para ver y guardar los cronómetros.</p>';
+    }
+  });
+
+  // Botón filtro bosses que pueden spawnear
+  filterBossesBtn.addEventListener('click', () => {
+    showOnlyCanSpawn = !showOnlyCanSpawn;
+    filterBossesBtn.textContent = showOnlyCanSpawn ? 'Mostrar todos los bosses' : 'Mostrar sólo bosses que pueden spawnear';
+    renderTimers();
+  });
+
+  // Buscar por nombre
+  searchInput.addEventListener('input', () => {
+    renderTimers();
+  });
+
+  // Tema claro/oscuro
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    // Guardar preferencia localStorage
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  }
+
+  // Cargar tema guardado
+  window.onload = () => {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
     }
   };
+
+  // Actualizar timers cada 10 segundos
+  setInterval(() => {
+    if (currentUser) updateTimers();
+  }, 10000);
+
 </script>
 </body>
 </html>
