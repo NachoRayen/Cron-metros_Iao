@@ -536,7 +536,22 @@
   <audio id="soundSpawned" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
 <script>
   // Datos de bosses ejemplo (puedes agregar o modificar)
-  const bosses = [
+const bosses = [
+  { id: "rey-dragon", name: "Rey Dragón", respawnMin: 22 * 60, respawnMax: 30 * 60 },
+  { id: "dragon-legendario", name: "Dragón Legendario", respawnMin: 16 * 60, respawnMax: 24 * 60 },
+  { id: "gran-dragon-negro", name: "Gran Dragón Negro", respawnMin: 12 * 60, respawnMax: 20 * 60 },
+  { id: "gran-dragon-rojo", name: "Gran Dragón Rojo", respawnMin: 12 * 60, respawnMax: 20 * 60 },
+  { id: "archimago-abisal", name: "Archimago Abisal", respawnMin: 9 * 60, respawnMax: 18 * 60 },
+  { id: "gran-dragon-azul", name: "Gran Dragón Azul", respawnMin: 8 * 60, respawnMax: 14 * 60 },
+  { id: "eishner", name: "Eishner", respawnMin: 9 * 60, respawnMax: 18 * 60 },
+  { id: "gran-dragon-verde", name: "Gran Dragón Verde", respawnMin: 2 * 60, respawnMax: 5 * 60 },
+  { id: "djinn", name: "Djinn", respawnMin: 7 * 60, respawnMax: 15 * 60 },
+  { id: "lilith", name: "Lilith", respawnMin: 2 * 60, respawnMax: 3 * 60 + 30 },
+  { id: "abyssaria", name: "Abyssaria", respawnMin: 3 * 60 + 30, respawnMax: 9 * 60 },
+  { id: "garveloth", name: "Garveloth", respawnMin: 30, respawnMax: 45 },
+  { id: "vampiro-transformado", name: "Vampiro Transformado", respawnMin: 30, respawnMax: 45 },
+];
+
     {
       id: 'boss1',
       name: 'Gorgona',
