@@ -1,158 +1,210 @@
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cronómetro de Bosses - Imperium AO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      color: #ffd700;
+    }
+    .timer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .timer {
+      background: #333;
+      border-radius: 10px;
+      padding: 1rem;
+      width: 250px;
+      text-align: center;
+      box-shadow: 0 0 10px #000;
+    }
+    .timer h2 {
+      margin-bottom: 0.5rem;
+    }
+    .controls button {
+      margin: 0.25rem;
+      padding: 0.5rem 1rem;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background: #666;
+    }
+    .warning {
+      margin-top: 0.5rem;
+      color: #ff5555;
+      font-weight: bold;
+    }
+    .icon {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cronómetro de Bosses - Imperium AO</h1>
+  <div class="timer-container" id="timers"></div>
 
-<script>
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAizvPiX4f2hk4KFxD0J9Hm7hdfoNXz60Y",
-    authDomain: "cronometroiao.firebaseapp.com",
-    projectId: "cronometroiao",
-    storageBucket: "cronometroiao.firebasestorage.app",
-    messagingSenderId: "906013460712",
-    appId: "1:906013460712:web:fdf87311000fc2288e615d",
-    measurementId: "G-K923BGRD3K"
-  };
+  <script>
+    // Configuración Firebase - reemplazá con la tuya si cambia
+    const firebaseConfig = {
+      apiKey: "AIzaSyAizvPiX4f2hk4KFxD0J9Hm7hdfoNXz60Y",
+      authDomain: "cronometroiao.firebaseapp.com",
+      databaseURL: "https://cronometroiao-default-rtdb.firebaseio.com",
+      projectId: "cronometroiao",
+      storageBucket: "cronometroiao.appspot.com",
+      messagingSenderId: "906013460712",
+      appId: "1:906013460712:web:fdf87311000fc2288e615d"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-  };
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+    // Lista de bosses con tiempos (en minutos)
+    const bosses = [
+      { name: "Rey Dragón", min: 1320, max: 1800 },
+      { name: "Dragón Legendario", min: 960, max: 1440 },
+      { name: "Gran Dragón Negro", min: 720, max: 1200 },
+      { name: "Gran Dragón Rojo", min: 720, max: 1200 },
+      { name: "Archimago Abisal", min: 540, max: 1080 },
+      { name: "Gran Dragón Azul", min: 480, max: 840 },
+      { name: "Eishner", min: 540, max: 1080 },
+      { name: "Gran Dragón Verde", min: 120, max: 300 },
+      { name: "Djinn", min: 420, max: 900 },
+      { name: "Lilith", min: 120, max: 210 },
+      { name: "Abyssaria", min: 210, max: 540 },
+      { name: "Garveloth", min: 30, max: 45 },
+      { name: "Vampiro Transformado", min: 30, max: 45 },
+      { name: "Gorgona", min: 16.6667, max: 61.0167 }
+    ];
 
-  // Lista de bosses con tiempos (en minutos)
-  const bosses = [
-    { name: "Rey Dragón", min: 1320, max: 1800 },
-    { name: "Dragón Legendario", min: 960, max: 1440 },
-    { name: "Gran Dragón Negro", min: 720, max: 1200 },
-    { name: "Gran Dragón Rojo", min: 720, max: 1200 },
-    { name: "Archimago Abisal", min: 540, max: 1080 },
-    { name: "Gran Dragón Azul", min: 480, max: 840 },
-    { name: "Eishner", min: 540, max: 1080 },
-    { name: "Gran Dragón Verde", min: 120, max: 300 },
-    { name: "Djinn", min: 420, max: 900 },
-    { name: "Lilith", min: 120, max: 210 },
-    { name: "Abyssaria", min: 210, max: 540 },
-    { name: "Garveloth", min: 30, max: 45 },
-    { name: "Vampiro Transformado", min: 30, max: 45 },
-    { name: "Gorgona", min: 16.6667, max: 61.0167 }
-  ];
-
-  function minutesToMs(min) {
-    return min * 60 * 1000;
-  }
-
-  const timersContainer = document.getElementById("timers");
-  const timers = {};
-
-  bosses.forEach(boss => {
-    const timerDiv = document.createElement("div");
-    timerDiv.className = "timer";
-    timerDiv.id = `timer-${boss.name.replace(/\s+/g, "-")}`;
-    timerDiv.innerHTML = `
-      <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
-      <div id="${boss.name}-time">00:00:00</div>
-      <div class="controls">
-        <button onclick="markDead('${boss.name}')">Murió ahora</button>
-        <button onclick="resetTimer('${boss.name}')">Reset</button>
-      </div>
-      <div id="warning-${boss.name.replace(/\s+/g, "-")}" class="warning"></div>
-    `;
-    timersContainer.appendChild(timerDiv);
-  });
-
-  bosses.forEach(boss => {
-    const bossKey = boss.name.replace(/\s+/g, "-");
-    const ref = database.ref('bosses/' + bossKey + '/deathTime');
-    ref.on('value', snapshot => {
-      const deathTime = snapshot.val();
-      if (deathTime) {
-        startTimer(boss.name, deathTime);
-      } else {
-        resetTimer(boss.name);
-      }
-    });
-  });
-
-  function startTimer(bossName, deathTimestamp) {
-    if (timers[bossName]) {
-      clearInterval(timers[bossName]);
+    function minutesToMs(min) {
+      return min * 60 * 1000;
     }
 
-    const boss = bosses.find(b => b.name === bossName);
-    const now = Date.now();
-    const deathTime = new Date(deathTimestamp).getTime();
-    const diff = now - deathTime;
+    const timersContainer = document.getElementById("timers");
+    const timers = {};
 
-    const minMs = minutesToMs(boss.min);
-    const maxMs = minutesToMs(boss.max);
-
-    const display = document.getElementById(`${bossName}-time`);
-    const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
-    const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
-
-    timers[bossName] = setInterval(() => {
-      const currentTime = Date.now();
-      const diff = currentTime - deathTime;
-
-      if (diff < 0) {
-        display.textContent = "00:00:00";
-        iconSpan.textContent = "";
-        warningDiv.textContent = "";
-        return;
-      }
-
-      const hrs = String(Math.floor(diff / 3600000)).padStart(2, "0");
-      const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-      const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-
-      display.textContent = `${hrs}:${mins}:${secs}`;
-
-      if (diff >= minMs && diff < maxMs) {
-        iconSpan.textContent = "⏳";
-        warningDiv.textContent = "";
-      } else if (diff >= maxMs) {
-        iconSpan.textContent = "⚠️";
-        warningDiv.textContent = "Debería haber spawneado ya";
-      } else {
-        iconSpan.textContent = "";
-        warningDiv.textContent = "";
-      }
-    }, 1000);
-  }
-
-  function markDead(bossName) {
-    const bossKey = bossName.replace(/\s+/g, "-");
-    const nowISO = new Date().toISOString();
-    database.ref('bosses/' + bossKey).set({
-      deathTime: nowISO
+    // Crear los timers en el DOM
+    bosses.forEach(boss => {
+      const timerDiv = document.createElement("div");
+      timerDiv.className = "timer";
+      timerDiv.id = `timer-${boss.name.replace(/\s+/g, "-")}`;
+      timerDiv.innerHTML = `
+        <h2>${boss.name} <span class="icon" id="icon-${boss.name.replace(/\s+/g, "-")}"></span></h2>
+        <div id="${boss.name}-time">00:00:00</div>
+        <div class="controls">
+          <button onclick="markDead('${boss.name}')">Murió ahora</button>
+          <button onclick="resetTimer('${boss.name}')">Reset</button>
+        </div>
+        <div id="warning-${boss.name.replace(/\s+/g, "-")}" class="warning"></div>
+      `;
+      timersContainer.appendChild(timerDiv);
     });
-  }
 
-  function resetTimer(bossName) {
-    const bossKey = bossName.replace(/\s+/g, "-");
-    clearInterval(timers[bossName]);
-    delete timers[bossName];
+    // Escuchar cambios en Firebase para cada boss
+    bosses.forEach(boss => {
+      const bossKey = boss.name.replace(/\s+/g, "-");
+      const ref = database.ref('bosses/' + bossKey + '/deathTime');
+      ref.on('value', snapshot => {
+        const deathTime = snapshot.val();
+        if (deathTime) {
+          startTimer(boss.name, deathTime);
+        } else {
+          resetTimer(boss.name);
+        }
+      });
+    });
 
-    const display = document.getElementById(`${bossName}-time`);
-    const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
-    const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
+    function startTimer(bossName, deathTimestamp) {
+      if (timers[bossName]) {
+        clearInterval(timers[bossName]);
+      }
 
-    display.textContent = "00:00:00";
-    iconSpan.textContent = "";
-    warningDiv.textContent = "";
+      const boss = bosses.find(b => b.name === bossName);
+      const deathTime = new Date(deathTimestamp).getTime();
 
-    database.ref('bosses/' + bossKey).remove();
-  }
-</script>
+      const minMs = minutesToMs(boss.min);
+      const maxMs = minutesToMs(boss.max);
+
+      const display = document.getElementById(`${bossName}-time`);
+      const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
+      const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
+
+      timers[bossName] = setInterval(() => {
+        const currentTime = Date.now();
+        const diff = currentTime - deathTime;
+
+        if (diff < 0) {
+          display.textContent = "00:00:00";
+          iconSpan.textContent = "";
+          warningDiv.textContent = "";
+          return;
+        }
+
+        const hrs = String(Math.floor(diff / 3600000)).padStart(2, "0");
+        const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+        const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+
+        display.textContent = `${hrs}:${mins}:${secs}`;
+
+        if (diff >= minMs && diff < maxMs) {
+          iconSpan.textContent = "⏳";
+          warningDiv.textContent = "";
+        } else if (diff >= maxMs) {
+          iconSpan.textContent = "⚠️";
+          warningDiv.textContent = "Debería haber spawneado ya";
+        } else {
+          iconSpan.textContent = "";
+          warningDiv.textContent = "";
+        }
+      }, 1000);
+    }
+
+    function markDead(bossName) {
+      const bossKey = bossName.replace(/\s+/g, "-");
+      const nowISO = new Date().toISOString();
+      database.ref('bosses/' + bossKey).set({
+        deathTime: nowISO
+      });
+    }
+
+    function resetTimer(bossName) {
+      const bossKey = bossName.replace(/\s+/g, "-");
+      clearInterval(timers[bossName]);
+      delete timers[bossName];
+
+      const display = document.getElementById(`${bossName}-time`);
+      const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
+      const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
+
+      display.textContent = "00:00:00";
+      iconSpan.textContent = "";
+      warningDiv.textContent = "";
+
+      database.ref('bosses/' + bossKey).remove();
+    }
+  </script>
+</body>
+</html>
