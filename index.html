@@ -765,7 +765,7 @@
         // Info rango spawn
         const respawnRange = document.createElement("div");
         respawnRange.className = "respawn-time";
-        respawnRange.textContent = Respawn: ${formatDelay(boss.minDelay)} a ${formatDelay(boss.maxDelay)};
+        respawnRange.textContent = `Respawn: ${formatDelay(boss.minDelay)} a ${formatDelay(boss.maxDelay)}`;
         container.appendChild(respawnRange);
 
         // Tiempo restante display
@@ -827,7 +827,7 @@
           const now = new Date();
           // Ajustar a formato datetime-local "YYYY-MM-DDTHH:mm"
           const pad = (n) => n.toString().padStart(2, "0");
-          const localStr = ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())};
+          const localStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
           deathInput.value = localStr;
           const isoString = now.toISOString();
           saveTimerData(boss.name, isoString);
@@ -841,14 +841,14 @@
     // Función para formatear delays en horas y minutos
     function formatDelay(hours) {
       if (hours < 1) {
-        return ${Math.round(hours * 60)}m;
+        return `${Math.round(hours * 60)}m`;
       } else if (Number.isInteger(hours)) {
-        return ${hours}h;
+        return `${hours}h`;
       } else {
         // Ejemplo 3.5 = 3h 30m
         const h = Math.floor(hours);
         const m = Math.round((hours - h) * 60);
-        return ${h}h ${m}m;
+        return `${h}h ${m}m`;
       }
     }
 
@@ -911,7 +911,7 @@
       const h = Math.floor(totalSeconds / 3600);
       const m = Math.floor((totalSeconds % 3600) / 60);
       const s = totalSeconds % 60;
-      return ${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")};
+      return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
     }
 
     // Filtrar bosses por texto
