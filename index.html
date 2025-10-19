@@ -370,6 +370,36 @@
       color: #fff;
     }
 
+    /* ==== Botón Sonido ==== */
+    #soundToggle {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background: #003366;
+      border: 2px solid gold;
+      color: #d0e7ff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'MedievalSharp', cursive;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.1s;
+      user-select: none;
+      display: none; /* mostrado sólo para usuarios autorizados */
+    }
+    #soundToggle:hover {
+      background: gold;
+      color: #003366;
+      transform: scale(1.05);
+    }
+    body.light #soundToggle {
+      background: #f0e68c;
+      color: #003366;
+      border-color: #daa520;
+    }
+    body.light #soundToggle:hover {
+      background-color: #daa520;
+      color: #fff;
+    }
+
     /* ==== Input hora para "murió" ==== */
     .death-time-input {
       margin-top: 0.6rem;
@@ -417,8 +447,14 @@
   </div>
 
   <button id="themeToggle" style="display:none;" onclick="toggleTheme()">Cambiar a tema claro</button>
+  <!-- BOTÓN DE SONIDO (añadido) -->
+  <button id="soundToggle" onclick="toggleSound()">🔊 Sonido activado</button>
 
   <div class="timer-container" id="timers"></div>
+
+  <!-- Sonidos medievales (campana = entra en ventana de respawn, cuerno = pasado el máximo) -->
+  <audio id="sound-min" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a10b9a3e9.mp3?filename=church-bell-medieval-108969.mp3" preload="auto"></audio>
+  <audio id="sound-max" src="https://cdn.pixabay.com/download/audio/2023/06/09/audio_5f6b949f45.mp3?filename=war-horn-146577.mp3" preload="auto"></audio>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -449,6 +485,28 @@
     const themeToggleBtn = document.getElementById("themeToggle");
     const searchInput = document.getElementById("searchInput");
 
+    // elementos sonido agregados
+    const soundToggleBtn = document.getElementById("soundToggle");
+    const soundMin = document.getElementById("sound-min");
+    const soundMax = document.getElementById("sound-max");
+    let soundEnabled = localStorage.getItem("soundEnabled") !== "false"; // por defecto true
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem("soundEnabled", soundEnabled);
+      updateSoundButton();
+    }
+
+    function updateSoundButton() {
+      if (soundEnabled) {
+        soundToggleBtn.textContent = "🔊 Sonido activado";
+      } else {
+        soundToggleBtn.textContent = "🔇 Sonido desactivado";
+      }
+    }
+
+    updateSoundButton();
+
     const bosses = [
       { name: "Rey Dragón Gotmul", min: 1320, max: 1800 },
       { name: "Dragón Legendario Gotmul", min: 960, max: 1440 },
@@ -473,6 +531,7 @@
     ];
 
     let timers = {};
+    let timersState = {}; // guarda estado actual de cada boss para controlar sonidos (before/min/max)
     let currentTheme = "dark";
 
     function pad(n) {
@@ -531,9 +590,16 @@
           if (deathTime) startTimer(boss.name, deathTime);
           else resetTimer(boss.name);
         });
+
+        // inicializar estado sonoro si no existe
+        if (!timersState[boss.name]) timersState[boss.name] = "before";
       });
 
       timersContainer.style.display = filteredBosses.length ? "flex" : "none";
+
+      // mostrar botón sonido cuando hay timers visibles (y si el usuario está autorizado el auth handler lo mostrará)
+      soundToggleBtn.style.display = filteredBosses.length ? "inline-block" : "none";
+      updateSoundButton();
     }
 
     function startTimer(bossName, deathTimestamp) {
@@ -546,6 +612,9 @@
       const iconSpan = document.getElementById(`icon-${bossName.replace(/\s+/g, "-")}`);
       const warningDiv = document.getElementById(`warning-${bossName.replace(/\s+/g, "-")}`);
 
+      // asegurar estado inicial
+      if (!timersState[bossName]) timersState[bossName] = "before";
+
       timers[bossName] = setInterval(() => {
         const now = Date.now();
         const diff = now - deathTime;
@@ -553,19 +622,40 @@
           display.textContent = "00:00:00";
           iconSpan.textContent = "";
           warningDiv.textContent = "Hora futura inválida";
+          timersState[bossName] = "before";
           return;
         }
         display.textContent = `${pad(Math.floor(diff / 3600000))}:${pad(Math.floor((diff % 3600000) / 60000))}:${pad(Math.floor((diff % 60000) / 1000))}`;
 
-        if (diff >= minMs && diff < maxMs) {
+        // determinamos el estado actual
+        let currentState = "before";
+        if (diff >= minMs && diff < maxMs) currentState = "min";
+        else if (diff >= maxMs) currentState = "max";
+
+        // actualizamos visualmente
+        if (currentState === "min") {
           iconSpan.textContent = "⏳";
           warningDiv.textContent = "";
-        } else if (diff >= maxMs) {
+        } else if (currentState === "max") {
           iconSpan.textContent = "⚠️";
           warningDiv.textContent = "Debería haber spawneado ya";
         } else {
           iconSpan.textContent = "";
           warningDiv.textContent = "";
+        }
+
+        // reproducir sonido sólo cuando cambia de estado y si está habilitado
+        if (currentState !== timersState[bossName]) {
+          if (soundEnabled) {
+            if (currentState === "min") {
+              // campana medieval
+              try { soundMin.currentTime = 0; soundMin.play(); } catch(e) { /* ignore */ }
+            } else if (currentState === "max") {
+              // cuerno de guerra
+              try { soundMax.currentTime = 0; soundMax.play(); } catch(e) { /* ignore */ }
+            }
+          }
+          timersState[bossName] = currentState;
         }
       }, 1000);
     }
@@ -603,6 +693,7 @@
       const bossKey = bossName.replace(/\s+/g, "-");
       clearInterval(timers[bossName]);
       delete timers[bossName];
+      delete timersState[bossName];
       const display = document.getElementById(`${bossName}-time`);
       const iconSpan = document.getElementById(`icon-${bossKey}`);
       const warningDiv = document.getElementById(`warning-${bossKey}`);
@@ -651,6 +742,8 @@
           logoutButton.style.display = "block";
           toolsDiv.style.display = "flex";
           themeToggleBtn.style.display = "inline-block";
+          // mostrar boton de sonido cuando el usuario está autorizado
+          soundToggleBtn.style.display = "inline-block";
           showTimers();
         } else {
           loginForm.style.display = "none";
@@ -659,6 +752,7 @@
           logoutButton.style.display = "block";
           toolsDiv.style.display = "none";
           themeToggleBtn.style.display = "none";
+          soundToggleBtn.style.display = "none";
         }
         clearMessage();
       } else {
@@ -668,6 +762,7 @@
         logoutButton.style.display = "none";
         toolsDiv.style.display = "none";
         themeToggleBtn.style.display = "none";
+        soundToggleBtn.style.display = "none";
         clearMessage();
       }
     });
@@ -697,7 +792,5 @@
   </script>
 </body>
 </html>
-
-
 
 
